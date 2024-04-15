@@ -26,6 +26,14 @@ public interface ISurveyService {
      * @return 问卷集合
      */
     public List<Survey> selectSurveyList(Survey survey);
+    
+    /**
+     * 查询问卷列表，并判断是否已经测试过
+     * @param survey
+     * @param userId
+     * @return
+     */
+    public List<Survey> selectSurveyList(Survey survey, Long userId);
 
     /**
      * 新增问卷

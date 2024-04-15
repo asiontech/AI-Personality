@@ -8,6 +8,10 @@ import com.shure.surdes.common.enums.BusinessType;
 import com.shure.surdes.common.utils.poi.ExcelUtil;
 import com.shure.surdes.survey.domain.Options;
 import com.shure.surdes.survey.service.IOptionsService;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +24,7 @@ import java.util.List;
  * @author Shure
  * @date 2021-10-18
  */
+@Api(tags = "问卷选项")
 @RestController
 @RequestMapping("/survey/options")
 public class OptionsController extends BaseController {
@@ -29,7 +34,8 @@ public class OptionsController extends BaseController {
     /**
      * 查询问卷选项列表
      */
-    @PreAuthorize("@ss.hasPermi('survey:options:list')")
+    @ApiOperation(value = "查询问卷选项列表")
+//    @PreAuthorize("@ss.hasPermi('survey:options:list')")
     @GetMapping("/list")
     public TableDataInfo list(Options options) {
         startPage();
@@ -40,6 +46,7 @@ public class OptionsController extends BaseController {
     /**
      * 导出问卷选项列表
      */
+    @ApiOperation(value = "导出问卷选项列表")
     @PreAuthorize("@ss.hasPermi('survey:options:export')")
     @Log(title = "问卷选项", businessType = BusinessType.EXPORT)
     @GetMapping("/export")
@@ -52,6 +59,7 @@ public class OptionsController extends BaseController {
     /**
      * 获取问卷选项详细信息
      */
+    @ApiOperation(value = "获取问卷选项详细信息")
     @PreAuthorize("@ss.hasPermi('survey:options:query')")
     @GetMapping(value = "/{optionId}")
     public AjaxResult getInfo(@PathVariable("optionId") Long optionId) {
@@ -61,6 +69,7 @@ public class OptionsController extends BaseController {
     /**
      * 新增问卷选项
      */
+    @ApiOperation(value = "新增问卷选项")
     @PreAuthorize("@ss.hasPermi('survey:options:add')")
     @Log(title = "问卷选项", businessType = BusinessType.INSERT)
     @PostMapping
@@ -71,6 +80,7 @@ public class OptionsController extends BaseController {
     /**
      * 修改问卷选项
      */
+    @ApiOperation(value = "修改问卷选项")
     @PreAuthorize("@ss.hasPermi('survey:options:edit')")
     @Log(title = "问卷选项", businessType = BusinessType.UPDATE)
     @PutMapping
@@ -81,6 +91,7 @@ public class OptionsController extends BaseController {
     /**
      * 删除问卷选项
      */
+    @ApiOperation(value = "删除问卷选项")
     @PreAuthorize("@ss.hasPermi('survey:options:remove')")
     @Log(title = "问卷选项", businessType = BusinessType.DELETE)
     @DeleteMapping("/{optionIds}")

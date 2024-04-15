@@ -54,6 +54,12 @@ public class SysUserServiceImpl implements ISysUserService
 
     @Autowired
     private ISysConfigService configService;
+    
+    @Override
+    public List<SysUser> selectUserListNoDataScope(SysUser user) {
+        return userMapper.selectUserList(user);
+    }
+
 
     /**
      * 根据条件分页查询用户列表

@@ -1,5 +1,6 @@
 package com.shure.surdes.survey.service;
 
+import com.alibaba.fastjson.JSONObject;
 import com.shure.surdes.survey.domain.Answer;
 
 import java.util.List;
@@ -26,7 +27,7 @@ public interface IAnswerService {
      * @return 问卷答案结果集合
      */
     public List<Answer> selectAnswerList(Answer answer);
-
+    
     /**
      * 新增问卷答案结果
      *

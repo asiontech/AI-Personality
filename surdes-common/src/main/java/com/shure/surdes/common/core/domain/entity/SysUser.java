@@ -39,6 +39,8 @@ public class SysUser extends BaseEntity
     @Excel(name = "用户名称")
     private String nickName;
 
+    private String source;
+    
     /** 用户邮箱 */
     @Excel(name = "用户邮箱")
     private String email;
@@ -312,7 +314,17 @@ public class SysUser extends BaseEntity
         this.roleId = roleId;
     }
 
-    @Override
+    
+    
+    public String getSource() {
+		return source;
+	}
+
+	public void setSource(String source) {
+		this.source = source;
+	}
+
+	@Override
     public String toString() {
         return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
             .append("userId", getUserId())

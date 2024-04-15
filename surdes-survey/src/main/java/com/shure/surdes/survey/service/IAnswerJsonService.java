@@ -1,8 +1,9 @@
 package com.shure.surdes.survey.service;
 
-import com.shure.surdes.survey.domain.AnswerJson;
-
 import java.util.List;
+
+import com.alibaba.fastjson.JSONObject;
+import com.shure.surdes.survey.domain.AnswerJson;
 
 /**
  * 问卷答案结果jsonService接口
@@ -26,6 +27,13 @@ public interface IAnswerJsonService {
      * @return 问卷答案结果json集合
      */
     public List<AnswerJson> selectAnswerJsonList(AnswerJson answerJson);
+    
+    /**
+     * 查询用户最新的答案结果
+     * @param answerJson
+     * @return
+     */
+    public JSONObject selectAnswerJsonLatest(AnswerJson answerJson);
 
     /**
      * 根据问卷主键查询问卷采集内容

@@ -1,5 +1,6 @@
 package com.shure.surdes.survey.domain;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.shure.surdes.common.annotation.Excel;
 import com.shure.surdes.common.core.domain.BaseEntity;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -48,6 +49,9 @@ public class Survey extends BaseEntity {
      */
     @Excel(name = "创建人")
     private Long userId;
+    
+    /** 测评状态finish */
+    private String testStaus;
 
     /**
      * 数据状态（1：有效，0：无效）
@@ -109,7 +113,15 @@ public class Survey extends BaseEntity {
         return userId;
     }
 
-    public void setStatus(String status) {
+    public String getTestStaus() {
+		return testStaus;
+	}
+
+	public void setTestStaus(String testStaus) {
+		this.testStaus = testStaus;
+	}
+
+	public void setStatus(String status) {
         this.status = status;
     }
 

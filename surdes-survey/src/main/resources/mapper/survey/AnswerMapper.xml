@@ -9,6 +9,7 @@
         <result property="surveyId" column="survey_id"/>
         <result property="questionId" column="question_id"/>
         <result property="optionCode" column="option_code"/>
+        <result property="optionCharacterType" column="option_character_type"/>
         <result property="answerValue" column="answer_value"/>
         <result property="extendValue" column="extend_value"/>
         <result property="userId" column="user_id"/>
@@ -22,6 +23,7 @@
                survey_id,
                question_id,
                option_code,
+               option_character_type,
                answer_value,
                extend_value,
                user_id,
@@ -56,6 +58,7 @@
             <if test="surveyId != null">survey_id,</if>
             <if test="questionId != null">question_id,</if>
             <if test="optionCode != null and optionCode != ''">option_code,</if>
+            <if test="optionCharacterType != null and optionCharacterType != ''">option_character_type,</if>
             <if test="answerValue != null">answer_value,</if>
             <if test="extendValue != null">extend_value,</if>
             <if test="userId != null">user_id,</if>
@@ -67,6 +70,7 @@
             <if test="surveyId != null">#{surveyId},</if>
             <if test="questionId != null">#{questionId},</if>
             <if test="optionCode != null and optionCode != ''">#{optionCode},</if>
+            <if test="optionCharacterType != null and optionCharacterType != ''">#{optionCharacterType},,</if>
             <if test="answerValue != null">#{answerValue},</if>
             <if test="extendValue != null">#{extendValue},</if>
             <if test="userId != null">#{userId},</if>

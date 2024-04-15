@@ -1,5 +1,6 @@
 package com.shure.surdes.survey.domain;
 
+import com.baomidou.mybatisplus.annotation.TableName;
 import com.shure.surdes.common.annotation.Excel;
 import com.shure.surdes.common.core.domain.BaseEntity;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -36,6 +37,9 @@ public class Answer extends BaseEntity {
      */
     @Excel(name = "选项编码")
     private String optionCode;
+    
+    @Excel(name = "选项对应的性格类型")
+    private String optionCharacterType;
 
     /**
      * 答案结果
@@ -99,7 +103,15 @@ public class Answer extends BaseEntity {
         return optionCode;
     }
 
-    public void setAnswerValue(String answerValue) {
+    public String getOptionCharacterType() {
+		return optionCharacterType;
+	}
+
+	public void setOptionCharacterType(String optionCharacterType) {
+		this.optionCharacterType = optionCharacterType;
+	}
+
+	public void setAnswerValue(String answerValue) {
         this.answerValue = answerValue;
     }
 

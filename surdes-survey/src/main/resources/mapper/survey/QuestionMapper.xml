@@ -30,6 +30,7 @@
         <result property="optionCode" column="option_code"/>
         <result property="optionText" column="option_text"/>
         <result property="optionNo" column="option_no"/>
+        <result property="optionCharacterType" column="option_character_type"/>
         <result property="hideQuestion" column="hide_question"/>
         <result property="showQuestion" column="show_question"/>
         <result property="isWtqd" column="is_wtqd"/>
@@ -64,6 +65,7 @@
                o.option_code,
                o.option_text,
                o.option_no,
+               o.option_character_type,
                o.hide_question,
                o.show_question,
                o.is_wtqd,

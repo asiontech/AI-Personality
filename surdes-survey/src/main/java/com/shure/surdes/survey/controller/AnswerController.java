@@ -8,6 +8,10 @@ import com.shure.surdes.common.enums.BusinessType;
 import com.shure.surdes.common.utils.poi.ExcelUtil;
 import com.shure.surdes.survey.domain.Answer;
 import com.shure.surdes.survey.service.IAnswerService;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +24,7 @@ import java.util.List;
  * @author Shure
  * @date 2021-10-18
  */
+@Api(tags = "问卷答案结果")
 @RestController
 @RequestMapping("/survey/answer")
 public class AnswerController extends BaseController {
@@ -29,7 +34,8 @@ public class AnswerController extends BaseController {
     /**
      * 查询问卷答案结果列表
      */
-    @PreAuthorize("@ss.hasPermi('survey:answer:list')")
+    @ApiOperation(value = "查询问卷答案结果列表")
+//    @PreAuthorize("@ss.hasPermi('survey:answer:list')")
     @GetMapping("/list")
     public TableDataInfo list(Answer answer) {
         startPage();
@@ -40,7 +46,8 @@ public class AnswerController extends BaseController {
     /**
      * 导出问卷答案结果列表
      */
-    @PreAuthorize("@ss.hasPermi('survey:answer:export')")
+    @ApiOperation(value = "导出问卷答案结果列表")
+//    @PreAuthorize("@ss.hasPermi('survey:answer:export')")
     @Log(title = "问卷答案结果", businessType = BusinessType.EXPORT)
     @GetMapping("/export")
     public AjaxResult export(Answer answer) {
@@ -52,7 +59,8 @@ public class AnswerController extends BaseController {
     /**
      * 获取问卷答案结果详细信息
      */
-    @PreAuthorize("@ss.hasPermi('survey:answer:query')")
+    @ApiOperation(value = "获取问卷答案结果详细信息")
+//    @PreAuthorize("@ss.hasPermi('survey:answer:query')")
     @GetMapping(value = "/{answerId}")
     public AjaxResult getInfo(@PathVariable("answerId") Long answerId) {
         return AjaxResult.success(answerService.selectAnswerByAnswerId(answerId));
@@ -61,17 +69,20 @@ public class AnswerController extends BaseController {
     /**
      * 新增问卷答案结果
      */
-    @PreAuthorize("@ss.hasPermi('survey:answer:add')")
+    @ApiOperation(value = "新增问卷答案结果")
+//    @PreAuthorize("@ss.hasPermi('survey:answer:add')")
     @Log(title = "问卷答案结果", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@RequestBody Answer answer) {
+    	answer.setUserId(getUserId().toString());
         return toAjax(answerService.insertAnswer(answer));
     }
 
     /**
      * 修改问卷答案结果
      */
-    @PreAuthorize("@ss.hasPermi('survey:answer:edit')")
+    @ApiOperation(value = "修改问卷答案结果")
+//    @PreAuthorize("@ss.hasPermi('survey:answer:edit')")
     @Log(title = "问卷答案结果", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody Answer answer) {
@@ -81,7 +92,8 @@ public class AnswerController extends BaseController {
     /**
      * 删除问卷答案结果
      */
-    @PreAuthorize("@ss.hasPermi('survey:answer:remove')")
+    @ApiOperation(value = "删除问卷答案结果")
+//    @PreAuthorize("@ss.hasPermi('survey:answer:remove')")
     @Log(title = "问卷答案结果", businessType = BusinessType.DELETE)
     @DeleteMapping("/{answerIds}")
     public AjaxResult remove(@PathVariable Long[] answerIds) {

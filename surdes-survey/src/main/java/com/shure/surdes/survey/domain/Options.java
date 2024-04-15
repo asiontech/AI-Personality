@@ -36,6 +36,9 @@ public class Options extends BaseEntity {
      */
     @Excel(name = "选项文本")
     private String optionText;
+    
+    @Excel(name = "选项对应的性格类型")
+    private String optionCharacterType;
 
     /**
      * 选项序号
@@ -149,7 +152,15 @@ public class Options extends BaseEntity {
         return optionNo;
     }
 
-    public void setHideQuestion(String hideQuestion) {
+    public String getOptionCharacterType() {
+		return optionCharacterType;
+	}
+
+	public void setOptionCharacterType(String optionCharacterType) {
+		this.optionCharacterType = optionCharacterType;
+	}
+
+	public void setHideQuestion(String hideQuestion) {
         this.hideQuestion = hideQuestion;
     }
 

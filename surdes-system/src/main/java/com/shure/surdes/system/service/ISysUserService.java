@@ -10,6 +10,8 @@ import com.shure.surdes.common.core.domain.entity.SysUser;
  */
 public interface ISysUserService
 {
+	
+	public List<SysUser> selectUserListNoDataScope(SysUser user);
     /**
      * 根据条件分页查询用户列表
      *

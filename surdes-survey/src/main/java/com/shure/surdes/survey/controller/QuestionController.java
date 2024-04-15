@@ -8,6 +8,10 @@ import com.shure.surdes.common.enums.BusinessType;
 import com.shure.surdes.common.utils.poi.ExcelUtil;
 import com.shure.surdes.survey.domain.Question;
 import com.shure.surdes.survey.service.IQuestionService;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +25,7 @@ import java.util.Map;
  * @author Shure
  * @date 2021-10-18
  */
+@Api(tags = "问卷题目")
 @RestController
 @RequestMapping("/survey/question")
 public class QuestionController extends BaseController {
@@ -30,6 +35,7 @@ public class QuestionController extends BaseController {
     /**
      * 查询问卷题目列表
      */
+    @ApiOperation(value = "查询问卷题目列表")
     @PreAuthorize("@ss.hasPermi('survey:question:list')")
     @GetMapping("/list")
     public TableDataInfo list(Question question) {
@@ -41,7 +47,8 @@ public class QuestionController extends BaseController {
     /**
      * 根据问卷主键查询问卷题目列表
      */
-    @PreAuthorize("@ss.hasPermi('survey:question:list')")
+    @ApiOperation(value = "根据问卷主键查询问卷题目列表")
+//    @PreAuthorize("@ss.hasPermi('survey:question:list')")
     @GetMapping("/list/{surveyId}")
     public AjaxResult list(@PathVariable("surveyId") Long surveyId) {
         List<Question> list = questionService.selectQuestionListBySurveyId(surveyId);
@@ -51,6 +58,7 @@ public class QuestionController extends BaseController {
     /**
      * 导出问卷题目列表
      */
+    @ApiOperation(value = "导出问卷题目列表")
     @PreAuthorize("@ss.hasPermi('survey:question:export')")
     @Log(title = "问卷题目", businessType = BusinessType.EXPORT)
     @GetMapping("/export")
@@ -63,6 +71,7 @@ public class QuestionController extends BaseController {
     /**
      * 获取问卷题目详细信息
      */
+    @ApiOperation(value = "获取问卷题目详细信息")
     @PreAuthorize("@ss.hasPermi('survey:question:query')")
     @GetMapping(value = "/{questionId}")
     public AjaxResult getInfo(@PathVariable("questionId") Long questionId) {
@@ -72,6 +81,7 @@ public class QuestionController extends BaseController {
     /**
      * 新增问卷题目
      */
+    @ApiOperation(value = "新增问卷题目")
     @PreAuthorize("@ss.hasPermi('survey:question:add')")
     @Log(title = "问卷题目", businessType = BusinessType.INSERT)
     @PostMapping
@@ -82,6 +92,7 @@ public class QuestionController extends BaseController {
     /**
      * 修改问卷题目
      */
+    @ApiOperation(value = "修改问卷题目")
     @PreAuthorize("@ss.hasPermi('survey:question:edit')")
     @Log(title = "问卷题目", businessType = BusinessType.UPDATE)
     @PutMapping
@@ -92,6 +103,7 @@ public class QuestionController extends BaseController {
     /**
      * 删除问卷题目
      */
+    @ApiOperation(value = "删除问卷题目")
     @PreAuthorize("@ss.hasPermi('survey:question:remove')")
     @Log(title = "问卷题目", businessType = BusinessType.DELETE)
     @DeleteMapping("/{questionIds}")
@@ -102,6 +114,7 @@ public class QuestionController extends BaseController {
     /**
      * 更新问题序号和排序
      */
+    @ApiOperation(value = "更新问题序号和排序")
     @PreAuthorize("@ss.hasPermi('survey:survey:edit')")
     @Log(title = "更新问题序号和排序", businessType = BusinessType.UPDATE)
     @PutMapping("/updateQueNo")

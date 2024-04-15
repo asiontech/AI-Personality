@@ -1,13 +1,18 @@
 package com.shure.surdes.survey.service.impl;
 
-import com.shure.surdes.common.utils.DateUtils;
-import com.shure.surdes.survey.domain.Survey;
-import com.shure.surdes.survey.mapper.SurveyMapper;
-import com.shure.surdes.survey.service.ISurveyService;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import com.shure.surdes.common.utils.DateUtils;
+import com.shure.surdes.common.utils.StringUtils;
+import com.shure.surdes.survey.domain.AnswerJson;
+import com.shure.surdes.survey.domain.Survey;
+import com.shure.surdes.survey.mapper.AnswerJsonMapper;
+import com.shure.surdes.survey.mapper.SurveyMapper;
+import com.shure.surdes.survey.service.ISurveyService;
 
 /**
  * 问卷Service业务层处理
@@ -19,6 +24,9 @@ import java.util.List;
 public class SurveyServiceImpl implements ISurveyService {
     @Autowired
     private SurveyMapper surveyMapper;
+    
+    @Autowired
+    AnswerJsonMapper answerJsonMapper;
 
     /**
      * 查询问卷
@@ -40,6 +48,31 @@ public class SurveyServiceImpl implements ISurveyService {
     @Override
     public List<Survey> selectSurveyList(Survey survey) {
         return surveyMapper.selectSurveyList(survey);
+    }
+    
+    /**
+     * 查询问卷列表，并判断是否已经测试过
+     */
+    @Override
+    public List<Survey> selectSurveyList(Survey survey, Long userId) {
+    	List<Survey> list = surveyMapper.selectSurveyList(survey);
+    	if (userId != null) {
+    		AnswerJson answerJson = new AnswerJson();
+    		answerJson.setUserId(userId.toString());
+    		// 查询用户做过了的测试
+    		List<AnswerJson> answerJsonList = answerJsonMapper.selectAnswerJsonList(answerJson);
+    		if (StringUtils.isNotEmpty(answerJsonList)) {
+    			List<Long> surveyIds = answerJsonList.stream().map(AnswerJson::getSurveyId).collect(Collectors.toList());
+    			for (Survey su : list) {
+    				Long surveyId = su.getSurveyId();
+    				// 判断是否已经测试过
+    				if (surveyIds.contains(surveyId)) {
+    					su.setTestStaus("finish"); // 已测评
+    				}
+    			}
+    		}
+    	}
+    	return list;
     }
 
     /**

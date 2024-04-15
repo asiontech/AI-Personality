@@ -31,6 +31,12 @@ public class AnswerJson extends BaseEntity {
     @Excel(name = "答案结果，json格式存储")
     private String answerJson;
 
+    @Excel(name = "性格结果")
+    private String answerResult;
+    
+    @Excel(name = "性格结果原始")
+    private String answerResultOrigin;
+    
     /**
      * 答题人唯一标识
      */
@@ -73,7 +79,23 @@ public class AnswerJson extends BaseEntity {
         return answerJson;
     }
 
-    public void setUserId(String userId) {
+    public String getAnswerResult() {
+		return answerResult;
+	}
+
+	public void setAnswerResult(String answerResult) {
+		this.answerResult = answerResult;
+	}
+
+	public String getAnswerResultOrigin() {
+		return answerResultOrigin;
+	}
+
+	public void setAnswerResultOrigin(String answerResultOrigin) {
+		this.answerResultOrigin = answerResultOrigin;
+	}
+
+	public void setUserId(String userId) {
         this.userId = userId;
     }
 

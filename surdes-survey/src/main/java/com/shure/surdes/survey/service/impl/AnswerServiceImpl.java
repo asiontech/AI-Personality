@@ -1,13 +1,21 @@
 package com.shure.surdes.survey.service.impl;
 
-import com.shure.surdes.common.utils.DateUtils;
-import com.shure.surdes.survey.domain.Answer;
-import com.shure.surdes.survey.mapper.AnswerMapper;
-import com.shure.surdes.survey.service.IAnswerService;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import com.alibaba.fastjson.JSONObject;
+import com.shure.surdes.common.utils.DateUtils;
+import com.shure.surdes.common.utils.StringUtils;
+import com.shure.surdes.survey.domain.Answer;
+import com.shure.surdes.survey.mapper.AnswerMapper;
+import com.shure.surdes.survey.service.IAnswerService;
 
 /**
  * 问卷答案结果Service业务层处理
@@ -41,7 +49,7 @@ public class AnswerServiceImpl implements IAnswerService {
     public List<Answer> selectAnswerList(Answer answer) {
         return answerMapper.selectAnswerList(answer);
     }
-
+    
     /**
      * 新增问卷答案结果
      *
@@ -97,4 +105,5 @@ public class AnswerServiceImpl implements IAnswerService {
     public int deleteAnswerBySurveyIds(Long[] surveyIds) {
         return answerMapper.deleteAnswerBySurveyIds(surveyIds);
     }
+
 }

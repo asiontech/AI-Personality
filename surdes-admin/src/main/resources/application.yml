@@ -9,18 +9,28 @@ surdes:
   # 实例演示开关
   demoEnabled: true
   # 文件路径 示例（ Windows配置D:/surdes/uploadPath，Linux配置 /home/surdes/uploadPath）
-  profile: E:/surdes/uploadPath
+#  profile: D:/profile/surdes/
+  profile: /home/profile/surdes/
   # 获取ip地址开关
   addressEnabled: false
   # 验证码类型 math 数组计算 char 字符验证
   captchaType: math
   # 若依版本
   ruoyi-version: 3.7.0
+  
+justauth:
+  weibo:
+#    clientId: 2008830081
+#    clientSecret: d0985ddca849ef00d1de73d61b231d8b
+#    redirectUri: http://dawu.asiontech.com:80/callback
+    clientId: 613550917
+    clientSecret: 449de11598449c7fd2ec29b34d8d32c1
+    redirectUri: http://s2.gkcns.com:2017/callback
 
 # 开发环境配置
 server:
   # 服务器的HTTP端口，默认为8080
-  port: 8080
+  port: 2018
   servlet:
     # 应用的访问路径
     context-path: /
@@ -61,13 +71,14 @@ spring:
   # redis 配置
   redis:
     # 地址
-    host: localhost
+#    host: redis
+    host: 192.168.101.51
     # 端口，默认为6379
     port: 6379
     # 数据库索引
     database: 0
     # 密码
-    password:
+    password: zwgkredis
     # 连接超时时间
     timeout: 10s
     lettuce:
@@ -99,6 +110,16 @@ mybatis:
   # 加载全局的配置文件
   configLocation: classpath:mybatis/mybatis-config.xml
 
+# MyBatis-plus配置
+mybatis-plus:
+    # 搜索指定包别名
+    typeAliasesPackage: com.shure.surdes.**.domain
+    # 配置mapper的扫描，找到所有的mapper.xml映射文件
+    mapperLocations: classpath*:mapper/**/*.xml
+    global-config:
+      db-config:
+        id-type: auto
+
 # PageHelper分页插件
 pagehelper:
   helperDialect: mysql
@@ -110,7 +131,7 @@ swagger:
   # 是否开启swagger
   enabled: true
   # 请求前缀
-  pathMapping: /dev-api
+  pathMapping: /
 
 # 防止XSS攻击
 xss:

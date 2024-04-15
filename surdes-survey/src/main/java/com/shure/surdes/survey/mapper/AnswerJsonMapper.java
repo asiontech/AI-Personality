@@ -28,6 +28,13 @@ public interface AnswerJsonMapper {
      * @return 问卷答案结果json集合
      */
     public List<AnswerJson> selectAnswerJsonList(AnswerJson answerJson);
+    
+    /**
+     * 查询用户最新的答案结果
+     * @param answerJson
+     * @return
+     */
+    public List<AnswerJson> selectAnswerJsonLatest(AnswerJson answerJson);
 
     /**
      * 新增问卷答案结果json

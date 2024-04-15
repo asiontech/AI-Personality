@@ -8,6 +8,10 @@ import com.shure.surdes.common.enums.BusinessType;
 import com.shure.surdes.common.utils.poi.ExcelUtil;
 import com.shure.surdes.survey.domain.AnswerJson;
 import com.shure.surdes.survey.service.IAnswerJsonService;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +24,7 @@ import java.util.List;
  * @author Shure
  * @date 2021-10-18
  */
+@Api(tags = "问卷答案结果json")
 @RestController
 @RequestMapping("/survey/json")
 public class AnswerJsonController extends BaseController {
@@ -29,18 +34,27 @@ public class AnswerJsonController extends BaseController {
     /**
      * 查询问卷答案结果json列表
      */
-    @PreAuthorize("@ss.hasPermi('survey:json:list')")
+    @ApiOperation(value = "查询问卷答案结果json列表")
+//    @PreAuthorize("@ss.hasPermi('survey:json:list')")
     @GetMapping("/list")
     public TableDataInfo list(AnswerJson answerJson) {
         startPage();
         List<AnswerJson> list = answerJsonService.selectAnswerJsonList(answerJson);
         return getDataTable(list);
     }
+    
+    @ApiOperation(value = "查询用户的最新答案结果")
+//  @PreAuthorize("@ss.hasPermi('survey:json:list')")
+    @GetMapping("/latest")
+    public AjaxResult getLatest(AnswerJson answerJson) {
+    	return AjaxResult.success(answerJsonService.selectAnswerJsonLatest(answerJson));
+    }
 
     /**
      * 导出问卷答案结果json列表
      */
-    @PreAuthorize("@ss.hasPermi('survey:json:export')")
+    @ApiOperation(value = "导出问卷答案结果json列表")
+//    @PreAuthorize("@ss.hasPermi('survey:json:export')")
     @Log(title = "问卷答案结果json", businessType = BusinessType.EXPORT)
     @GetMapping("/export")
     public AjaxResult export(AnswerJson answerJson) {
@@ -52,7 +66,8 @@ public class AnswerJsonController extends BaseController {
     /**
      * 获取问卷答案结果json详细信息
      */
-    @PreAuthorize("@ss.hasPermi('survey:json:query')")
+    @ApiOperation(value = "获取问卷答案结果json详细信息")
+//    @PreAuthorize("@ss.hasPermi('survey:json:query')")
     @GetMapping(value = "/{anId}")
     public AjaxResult getInfo(@PathVariable("anId") Long anId) {
         return AjaxResult.success(answerJsonService.selectAnswerJsonByAnId(anId));
@@ -61,17 +76,20 @@ public class AnswerJsonController extends BaseController {
     /**
      * 新增问卷答案结果json
      */
-    @PreAuthorize("@ss.hasPermi('survey:json:add')")
+    @ApiOperation(value = "新增问卷答案结果json")
+//    @PreAuthorize("@ss.hasPermi('survey:json:add')")
     @Log(title = "问卷答案结果json", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@RequestBody AnswerJson answerJson) {
+    	answerJson.setUserId(getUserId().toString());
         return toAjax(answerJsonService.insertAnswerJson(answerJson));
     }
 
     /**
      * 修改问卷答案结果json
      */
-    @PreAuthorize("@ss.hasPermi('survey:json:edit')")
+    @ApiOperation(value = "修改问卷答案结果json")
+//    @PreAuthorize("@ss.hasPermi('survey:json:edit')")
     @Log(title = "问卷答案结果json", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody AnswerJson answerJson) {
@@ -81,7 +99,8 @@ public class AnswerJsonController extends BaseController {
     /**
      * 删除问卷答案结果json
      */
-    @PreAuthorize("@ss.hasPermi('survey:json:remove')")
+    @ApiOperation(value = "删除问卷答案结果json")
+//    @PreAuthorize("@ss.hasPermi('survey:json:remove')")
     @Log(title = "问卷答案结果json", businessType = BusinessType.DELETE)
     @DeleteMapping("/{anIds}")
     public AjaxResult remove(@PathVariable Long[] anIds) {
