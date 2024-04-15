@@ -1,6 +1,7 @@
 package com.shure.surdes.survey.service.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -23,6 +24,7 @@ import com.shure.surdes.survey.constant.SurveyType;
 import com.shure.surdes.survey.domain.AnswerJson;
 import com.shure.surdes.survey.domain.AnswerPlus;
 import com.shure.surdes.survey.domain.MbtiTypeDesc;
+import com.shure.surdes.survey.domain.SysUserPlus;
 import com.shure.surdes.survey.domain.UserSurveyResult;
 import com.shure.surdes.survey.mapper.AnswerJsonMapper;
 import com.shure.surdes.survey.mapper.AnswerMapper;
@@ -30,6 +32,7 @@ import com.shure.surdes.survey.mapper.MbtiTypeDescMapper;
 import com.shure.surdes.survey.service.IAnswerJsonService;
 import com.shure.surdes.survey.service.IAnswerPlusService;
 import com.shure.surdes.survey.service.IMbtiTypeDescService;
+import com.shure.surdes.survey.service.ISysUserPlusService;
 import com.shure.surdes.survey.service.IUserSurveyResultService;
 import com.shure.surdes.system.service.ISysUserService;
 
@@ -61,6 +64,9 @@ public class AnswerJsonServiceImpl implements IAnswerJsonService {
     
     @Autowired
     IUserSurveyResultService userSurveyResultService;
+    
+    @Autowired
+    ISysUserPlusService sysUserPlusService;
     
     /**
      * 查询问卷答案结果json
@@ -121,8 +127,20 @@ public class AnswerJsonServiceImpl implements IAnswerJsonService {
     			LambdaQueryWrapper<MbtiTypeDesc> wrapper = new LambdaQueryWrapper<MbtiTypeDesc>();
     			wrapper.eq(MbtiTypeDesc::getCharaCode, mbti);
     			MbtiTypeDesc mbtiTypeDesc = mbtiTypeDescMapper.selectOne(wrapper);
+    			String match = mbtiTypeDesc.getMatch();
+    			// 查询性格匹配的人员
+    			if (StringUtils.isNotEmpty(match)) {
+    				String[] split = match.split(",");
+    				List<SysUserPlus> matchPeople = getMatchPeople(Arrays.asList(split));
+    				json.put("matchPeople", matchPeople);
+    			}
     			json.put("mbtiTypeDesc", mbtiTypeDesc);
     		}
+    		// 查询性格相同的人员
+    		List<SysUserPlus> samePeople = getSamePeople(mbti);
+    		json.put("samePeople", samePeople);
+    		
+    		// 查询性格匹配的人员
     		json.put("answerJson", result);
     		json.put("radar", radar);
     		return json;
@@ -131,11 +149,33 @@ public class AnswerJsonServiceImpl implements IAnswerJsonService {
     }
     
     /**
-     * 获取性格匹配的人员，以及性格相同的人员
+     * 获取性格匹配的人员
+     * @param mbtis
+     * @return
+     */
+    private List<SysUserPlus> getMatchPeople(List<String> mbtis) {
+    	// 查询性格相同的人员
+    	LambdaQueryWrapper<UserSurveyResult> wrapper = new LambdaQueryWrapper<UserSurveyResult>();
+    	wrapper.in(UserSurveyResult::getSurveyResult, mbtis);
+    	List<UserSurveyResult> list = userSurveyResultService.list(wrapper);
+    	if (StringUtils.isNotEmpty(list)) {
+    		// 用户ids
+    		List<Long> userIds = list.stream().map(UserSurveyResult::getUserId).collect(Collectors.toList());
+    		// 查询用户信息
+    		LambdaQueryWrapper<SysUserPlus> swr = new LambdaQueryWrapper<SysUserPlus>();
+    		swr.in(SysUserPlus::getUserId, userIds);
+    		List<SysUserPlus> userPlusList = sysUserPlusService.list(swr);
+    		return userPlusList;
+    	}
+    	return null;
+    }
+    
+    /**
+     * 获取性格相同的人员
      * @param mbti
      * @return
      */
-    public JSONObject getMatchPeople(String mbti) {
+    private List<SysUserPlus> getSamePeople(String mbti) {
     	// 查询性格相同的人员
     	LambdaQueryWrapper<UserSurveyResult> wrapper = new LambdaQueryWrapper<UserSurveyResult>();
     	wrapper.eq(UserSurveyResult::getSurveyResult, mbti);
@@ -144,6 +184,10 @@ public class AnswerJsonServiceImpl implements IAnswerJsonService {
     		// 用户ids
     		List<Long> userIds = list.stream().map(UserSurveyResult::getUserId).collect(Collectors.toList());
     		// 查询用户信息
+    		LambdaQueryWrapper<SysUserPlus> swr = new LambdaQueryWrapper<SysUserPlus>();
+    		swr.in(SysUserPlus::getUserId, userIds);
+    		List<SysUserPlus> userPlusList = sysUserPlusService.list(swr);
+    		return userPlusList;
     	}
     	return null;
     }

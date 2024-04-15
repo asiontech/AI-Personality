@@ -23,16 +23,28 @@ public class MbtiTypeDesc {
 	
 	private String description;
 	
+	/** 代表人物 */
 	private String rePerson;
 	
+	/** 性格特征 */
 	private String feature;
 	
+	/** 适合工作 */
 	private String job;
 	
+	/** 成长道路 */
 	private String guard;
 	
+	/** 优点 */
 	private String advantage;
 	
+	/** 缺点 */
 	private String defect;
+	
+	/** 匹配 */
+	private String match;
+	
+	/** 不匹配 */
+	private String notMatch;
 	
 }
