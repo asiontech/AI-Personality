@@ -1,5 +1,18 @@
 package com.shure.surdes.survey.controller;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.shure.surdes.common.annotation.Log;
 import com.shure.surdes.common.core.controller.BaseController;
 import com.shure.surdes.common.core.domain.AjaxResult;
@@ -8,15 +21,11 @@ import com.shure.surdes.common.enums.BusinessType;
 import com.shure.surdes.common.utils.poi.ExcelUtil;
 import com.shure.surdes.survey.domain.AnswerJson;
 import com.shure.surdes.survey.service.IAnswerJsonService;
+import com.shure.surdes.survey.vo.AiTestVo;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 问卷答案结果jsonController
@@ -27,6 +36,8 @@ import java.util.List;
 @Api(tags = "问卷答案结果json")
 @RestController
 @RequestMapping("/survey/json")
+@Slf4j
+@CrossOrigin
 public class AnswerJsonController extends BaseController {
     @Autowired
     private IAnswerJsonService answerJsonService;
@@ -81,8 +92,27 @@ public class AnswerJsonController extends BaseController {
     @Log(title = "问卷答案结果json", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@RequestBody AnswerJson answerJson) {
-    	answerJson.setUserId(getUserId().toString());
+    	try {
+    		String userId = getUserId().toString();
+    		log.debug("提交结果，控制层当前登录用户id为：" + userId);
+//    		answerJson.setUserId(userId);
+     	} catch (Exception e) {
+//			return AjaxResult.error("获取用户id失败，请重新登录！");
+		}
         return toAjax(answerJsonService.insertAnswerJson(answerJson));
+    }
+    
+    @ApiOperation(value = "用户AI测试")
+    @Log(title = "用户AI测试", businessType = BusinessType.INSERT)
+    @PostMapping("/ai")
+    public AjaxResult aiTest(@RequestBody AiTestVo vo) {
+    	int row = answerJsonService.aiTest(vo);
+    	if (row == 1) {
+    		return AjaxResult.success();
+    	} else {
+    		return AjaxResult.error("AI测试失败，请手动填写问卷测试！");
+    	} 
+    		
     }
 
     /**

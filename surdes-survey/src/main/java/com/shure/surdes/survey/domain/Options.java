@@ -105,14 +105,36 @@ public class Options extends BaseEntity {
      */
     @Excel(name = "问卷主键")
     private Long surveyId;
-
+    
     /**
      * 帐套编码
      */
     @Excel(name = "帐套编码")
     private String bookCode;
+    
+    /** 统计总用户有多少人选了这个选项的百分比 */
+    private Integer percent;
+    
+    /** 统计有多少人选这个选项 */
+    private Integer staNum;
 
-    public void setOptionId(Long optionId) {
+    public Integer getPercent() {
+		return percent;
+	}
+
+	public void setPercent(Integer percent) {
+		this.percent = percent;
+	}
+
+	public Integer getStaNum() {
+		return staNum;
+	}
+
+	public void setStaNum(Integer staNum) {
+		this.staNum = staNum;
+	}
+
+	public void setOptionId(Long optionId) {
         this.optionId = optionId;
     }
 

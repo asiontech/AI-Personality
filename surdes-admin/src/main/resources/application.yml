@@ -17,12 +17,16 @@ surdes:
   captchaType: math
   # 若依版本
   ruoyi-version: 3.7.0
+
+# 模型分析服务接口
+model:
+  url: http://192.168.102.23:1230/mbti
   
 justauth:
   weibo:
 #    clientId: 2008830081
 #    clientSecret: d0985ddca849ef00d1de73d61b231d8b
-#    redirectUri: http://dawu.asiontech.com:80/callback
+#    redirectUri: https://dawu.asiontech.com/callback
     clientId: 613550917
     clientSecret: 449de11598449c7fd2ec29b34d8d32c1
     redirectUri: http://s2.gkcns.com:2017/callback
@@ -30,7 +34,8 @@ justauth:
 # 开发环境配置
 server:
   # 服务器的HTTP端口，默认为8080
-  port: 2018
+  port: 2008
+#  port: 2018
   servlet:
     # 应用的访问路径
     context-path: /
@@ -79,6 +84,7 @@ spring:
     database: 0
     # 密码
     password: zwgkredis
+#    password: 
     # 连接超时时间
     timeout: 10s
     lettuce:

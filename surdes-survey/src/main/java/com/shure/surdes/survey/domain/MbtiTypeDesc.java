@@ -17,23 +17,29 @@ public class MbtiTypeDesc {
 	@TableId
 	private Long id;
 	
+	/** 性格编码 */
 	private String charaCode;
 	
+	/** 性格名称 */
 	private String charaName;
 	
+	/** 关键词 */
+	private String keyword;
+	
+	/** 类型解析 */
 	private String description;
 	
 	/** 代表人物 */
 	private String rePerson;
 	
-	/** 性格特征 */
-	private String feature;
+	/** 成长守护 */
+	private String growthGuard;
 	
-	/** 适合工作 */
-	private String job;
+	/** 职业指导 */
+	private String jobGuide;
 	
-	/** 成长道路 */
-	private String guard;
+	/** 恋爱指导 */
+	private String loveGuide;
 	
 	/** 优点 */
 	private String advantage;
@@ -42,7 +48,7 @@ public class MbtiTypeDesc {
 	private String defect;
 	
 	/** 匹配 */
-	private String match;
+	private String matchMbti;
 	
 	/** 不匹配 */
 	private String notMatch;

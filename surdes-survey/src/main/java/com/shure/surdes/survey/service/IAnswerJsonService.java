@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.alibaba.fastjson.JSONObject;
 import com.shure.surdes.survey.domain.AnswerJson;
+import com.shure.surdes.survey.vo.AiTestVo;
 
 /**
  * 问卷答案结果jsonService接口
@@ -50,6 +51,12 @@ public interface IAnswerJsonService {
      * @return 结果
      */
     public int insertAnswerJson(AnswerJson answerJson);
+   
+    /**
+     * ai测试获取结果并存储
+     * @param vo
+     */
+    public int aiTest(AiTestVo vo);
 
     /**
      * 修改问卷答案结果json

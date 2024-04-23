@@ -1,21 +1,16 @@
-package com.shure.surdes.survey.domain;
+package com.shure.surdes.survey.vo;
 
-import org.springframework.data.annotation.Transient;
-
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
 
 import lombok.Data;
 
 /**
- * 用户表
+ * 返回用户信息封装对象
  * @author color
  *
  */
 @Data
-@TableName(value = "sys_user")
-public class SysUserPlus {
+public class SysUserPlusVo {
 
     /** 用户ID */
 	@TableId
@@ -60,16 +55,9 @@ public class SysUserPlus {
     /** 头像base64编码 */
     private String avatarBase64;
     
-    @TableField("big_avatar_base64")
-    private String bigAvatarBase64;
-    
     /** 关注数量 */
     private Integer friendsCount;
     
     /** 粉丝数量 */
     private Integer followersCount;
-    
-    @TableField(exist = false)
-    private String mbti;
-    
 }

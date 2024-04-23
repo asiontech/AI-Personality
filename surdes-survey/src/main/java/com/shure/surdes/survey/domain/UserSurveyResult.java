@@ -20,8 +20,13 @@ public class UserSurveyResult {
 	@TableId
 	private Long userId;
 	
-	private String surveyResult;
+	/** 测试结果 */
+	private String answerResult;
 	
+	/** 测试结果原始值 */
+	private String answerResultOrigin;
+	
+	/** 测试类型 */
 	private String surveyType;
 	
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")

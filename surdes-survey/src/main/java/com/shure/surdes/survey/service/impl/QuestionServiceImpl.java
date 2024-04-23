@@ -1,17 +1,21 @@
 package com.shure.surdes.survey.service.impl;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.shure.surdes.common.utils.DateUtils;
 import com.shure.surdes.common.utils.StringUtils;
 import com.shure.surdes.survey.domain.Options;
 import com.shure.surdes.survey.domain.Question;
+import com.shure.surdes.survey.mapper.AnswerPlusMapper;
 import com.shure.surdes.survey.mapper.QuestionMapper;
 import com.shure.surdes.survey.service.IOptionsService;
 import com.shure.surdes.survey.service.IQuestionService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Map;
+import com.shure.surdes.survey.vo.AnswerPlusVo;
 
 /**
  * 问卷题目Service业务层处理
@@ -26,6 +30,9 @@ public class QuestionServiceImpl implements IQuestionService {
 
     @Autowired
     private IOptionsService optionsService;
+    
+    @Autowired
+    AnswerPlusMapper answerPlusMapper;
 
     /**
      * 查询问卷题目
@@ -57,7 +64,53 @@ public class QuestionServiceImpl implements IQuestionService {
      */
     @Override
     public List<Question> selectQuestionListBySurveyId(Long surveyId) {
-        return questionMapper.selectQuestionListBySurvey(surveyId);
+    	List<Question> questionList = questionMapper.selectQuestionListBySurvey(surveyId);
+    	// 查询答题答案数据
+    	List<AnswerPlusVo> staNumList = answerPlusMapper.getAnswerPlusStaNum(surveyId);
+    	// 封装答题答案数据
+    	Map<Long, Map<String, Integer>> staNumMap = new HashMap<>();
+    	for (AnswerPlusVo vo : staNumList) {
+    		Long questionId = vo.getQuestionId();
+    		String optionCode = vo.getOptionCode();
+    		Integer num = vo.getNum();
+    		Map<String, Integer> qMap = staNumMap.get(questionId);
+    		if (qMap == null) {
+    			qMap = new HashMap<String, Integer>();
+    			staNumMap.put(questionId, qMap);
+    		}
+    		qMap.put(optionCode, num);
+    	}
+    	for (Question question : questionList) {
+    		Long questionId = question.getQuestionId();
+    		// 选项
+    		List<Options> options = question.getOptions();
+    		// 选项code对应的数值
+    		Map<String, Integer> optionNumMap = staNumMap.get(questionId);
+    		if (optionNumMap == null) {
+    			break;
+    		}
+    		// 总和
+    		Integer sum = optionNumMap.values().stream().reduce(Integer::sum).get();
+    		for (Options option : options) {
+    			String optionCode = option.getOptionCode();
+    			Integer num = optionNumMap.get(optionCode);
+    			if (num == null) {
+    				num = 0;
+    			}
+    			Integer percent = 100;
+    			// 计算百分比
+    			if (sum != 0) {
+    				// 计算百分比
+    		        double percentage = ((double) num / sum) * 100;
+    		        // 将百分比转换为整数
+    		        Long round = Math.round(percentage);
+    		        percent = round.intValue();
+    			}
+    			option.setPercent(percent);
+    			option.setStaNum(num);
+    		}
+    	}
+        return questionList;
     }
 
     /**

@@ -97,8 +97,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
                 // 过滤请求
                 .authorizeRequests()
                 // 对于登录login 注册register 验证码captchaImage 允许匿名访问
-                .antMatchers("/login", "/register", "/captchaImage", "/preLoginByWeibo", "/loginByWeibo", "/callback").anonymous()
-                .antMatchers("/survey/survey/list/**", "/survey/question/list/**", "/survey/options/list/**").permitAll()
+                .antMatchers("/login", "/register", "/captchaImage", "/preLoginByWeibo", "/loginByWeibo", "/callback").permitAll()
+//                .antMatchers("/login", "/register", "/captchaImage", "/preLoginByWeibo", "/loginByWeibo", "/callback").anonymous()
+                .antMatchers("/survey/survey/list/**", "/survey/question/list/**", "/survey/options/list/**", "/survey/survey/list").permitAll()
+//                .antMatchers("/survey/survey/list/**", "/survey/question/list/**", "/survey/options/list/**", "/survey/survey/list").anonymous()
+                .antMatchers("/survey/survey/list", "/survey/question/list", "/survey/options/list").permitAll()
+                
+//                .antMatchers("/survey/json").permitAll()
                 .antMatchers(
                         HttpMethod.GET,
                         "/",
