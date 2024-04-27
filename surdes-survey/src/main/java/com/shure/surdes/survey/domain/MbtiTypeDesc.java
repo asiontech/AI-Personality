@@ -29,6 +29,9 @@ public class MbtiTypeDesc {
 	/** 类型解析 */
 	private String description;
 	
+	/** 头像挂件跳转链接 */
+	private String jumpLink;
+	
 	/** 代表人物 */
 	private String rePerson;
 	

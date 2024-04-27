@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -38,7 +39,7 @@ public class ModelApi {
 	 * @param token
 	 * @return
 	 */
-	public JSONObject getMbti(String uuid, String user, String token) {
+	public JSONObject getMbti(String uuid, String user, String token, String isupdate) {
 		JSONObject json = new JSONObject();
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
@@ -46,11 +47,14 @@ public class ModelApi {
 		map.put("uid", uuid);
 		map.put("user", user);
 		map.put("user_token", token);
+		if (StringUtils.isNotEmpty(isupdate)) {
+			map.put("update", isupdate);
+		}
 		HttpEntity<HashMap<String, Object>> entity = new HttpEntity<>(map, headers);
 		try {
 			ResponseEntity<JSONObject> exchange = restTemplate.exchange(modelUrl, HttpMethod.POST, entity, JSONObject.class);
 			json = exchange.getBody();
-			log.info(json.toString());
+			log.debug(json.toString());
 			Integer code = json.getInteger("status");
 			if (200 == code) {
 				json = json.getJSONObject("data");

@@ -12,6 +12,9 @@ public class AiTestVo {
 	
 	/** 用户id */
 	private Long userId;
+	
+	/** ai测试 */
+	private Long surveyId;
 
 	/** sina用户uuid */
 	private String uid;
@@ -21,4 +24,10 @@ public class AiTestVo {
 	
 	/** sina用户token */
 	private String userToken;
+	
+	   /** 订单时间戳 */
+    private Long orderTimestamp;
+    
+    /** 队列唯一标识，userId+surveyId+时间戳 */
+    private String aid;
 }

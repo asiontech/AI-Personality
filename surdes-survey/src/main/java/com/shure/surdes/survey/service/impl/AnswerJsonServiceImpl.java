@@ -12,19 +12,24 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.shure.surdes.common.core.redis.RedisCache;
 import com.shure.surdes.common.exception.ServiceException;
 import com.shure.surdes.common.utils.DateUtils;
 import com.shure.surdes.common.utils.SecurityUtils;
 import com.shure.surdes.common.utils.StringUtils;
+import com.shure.surdes.survey.activemq.ActiveMQUtils;
+import com.shure.surdes.survey.activemq.QueueDictionary;
 import com.shure.surdes.survey.constant.MBTI16Type;
 import com.shure.surdes.survey.constant.SurveyType;
 import com.shure.surdes.survey.domain.AnswerJson;
 import com.shure.surdes.survey.domain.AnswerPlus;
 import com.shure.surdes.survey.domain.MbtiTypeDesc;
+import com.shure.surdes.survey.domain.SurveyOrder;
 import com.shure.surdes.survey.domain.SysUserPlus;
 import com.shure.surdes.survey.domain.UserSurveyResult;
 import com.shure.surdes.survey.mapper.AnswerJsonMapper;
@@ -34,6 +39,7 @@ import com.shure.surdes.survey.remote.ModelApi;
 import com.shure.surdes.survey.service.IAnswerJsonService;
 import com.shure.surdes.survey.service.IAnswerPlusService;
 import com.shure.surdes.survey.service.IMbtiTypeDescService;
+import com.shure.surdes.survey.service.ISurveyOrderService;
 import com.shure.surdes.survey.service.ISysUserPlusService;
 import com.shure.surdes.survey.service.IUserSurveyResultService;
 import com.shure.surdes.survey.vo.AiTestVo;
@@ -78,6 +84,15 @@ public class AnswerJsonServiceImpl implements IAnswerJsonService {
     @Autowired
     ModelApi modelApi;
     
+    @Autowired
+    ISurveyOrderService surveyOrderService;
+    
+    @Autowired
+    ActiveMQUtils activeMQUtils;
+    
+    @Autowired
+    RedisCache redisCache;
+    
     /**
      * 查询问卷答案结果json
      *
@@ -114,14 +129,46 @@ public class AnswerJsonServiceImpl implements IAnswerJsonService {
 		}
     	JSONObject json = new JSONObject();
     	String userId = answerJson.getUserId();
-    	Log.debug("查询用户最新答案传过来的用户id:" + userId);
-//    	List<AnswerJson> list = answerJsonMapper.selectAnswerJsonLatest(answerJson);
+    	log.debug("查询用户最新答案传过来的用户id:" + userId);
+    	Long surveyId = answerJson.getSurveyId();
+    	// 查询的问卷类型
+    	String stype = answerJson.getSurveyType();
+    	List<AnswerJson> list = answerJsonMapper.selectAnswerJsonLatest(answerJson);
+    	AnswerJson result = null;
+    	if (SurveyType.MBTI_AI_SURVEY_TEST.equals(stype)) { // ai测试结果
+    		if (StringUtils.isEmpty(list)) {
+    			json.put("code", 500);
+    			json.put("msg", "无AI测试结果，请前往极速AI测试进行测试！");
+    			return json;
+    		}
+    		// 查询用户的订单信息
+    		LambdaQueryWrapper<SurveyOrder> sowrapper = new LambdaQueryWrapper<SurveyOrder>();
+    		sowrapper.eq(SurveyOrder::getUserId, userId);
+    		sowrapper.eq(SurveyOrder::getSurveyId, surveyId);
+    		sowrapper.eq(SurveyOrder::getStatus, 1);
+    		sowrapper.orderByDesc(SurveyOrder::getOrderTimestamp);
+    		// 查询订单信息
+    		List<SurveyOrder> orderList = surveyOrderService.list(sowrapper);
+    		if (StringUtils.isEmpty(orderList)) {
+    			json.put("code", 500);
+    			json.put("msg", "没有支付订单信息，无法查看AI测试结果！");
+    			return json;
+    		}
+    		// 最新的订单
+    		SurveyOrder surveyOrder = orderList.get(0);
+    		Long anId = surveyOrder.getAnId(); // 结果id
+    		// 订单结果
+    		result = answerJsonMapper.selectAnswerJsonByAnId(anId); 
+    	}
     	// 查询结果表最新数据
-    	LambdaQueryWrapper<UserSurveyResult> usrwrapper = new LambdaQueryWrapper<UserSurveyResult>();
-    	usrwrapper.eq(UserSurveyResult::getUserId, userId);
-    	List<UserSurveyResult> usrList = userSurveyResultService.list(usrwrapper);
-    	if (StringUtils.isNotEmpty(usrList)) {
-    		UserSurveyResult result = usrList.get(0);
+//    	LambdaQueryWrapper<UserSurveyResult> usrwrapper = new LambdaQueryWrapper<UserSurveyResult>();
+//    	usrwrapper.eq(UserSurveyResult::getUserId, userId);
+//    	usrwrapper.eq(UserSurveyResult::getSurveyId, surveyId);
+//    	List<UserSurveyResult> list = userSurveyResultService.list(usrwrapper);
+    	if (StringUtils.isNotEmpty(list)) {
+    		if (result == null) { 
+    			result = list.get(0);
+    		}
     		// 用户得分
     		String origin = result.getAnswerResultOrigin();
     		// 用户性格结果
@@ -130,11 +177,35 @@ public class AnswerJsonServiceImpl implements IAnswerJsonService {
     		// 雷达图数据
     		List<Map<String, Object>> radar = new ArrayList<>();
     		List<String> characters = MBTI16Type.CHARACTER_8_TYPE;
+    		List<String> character4Type = MBTI16Type.CHARACTER_4_TYPE;
     		if (SurveyType.MBTI_AI_SURVEY_TEST.equals(surveyType)) { // ai测试结果
+//    		if (1000L == surveyId) {
+    			log.debug("查询ai测试结果,开始封装得分数据");
     			JSONObject aiJson = JSONObject.parseObject(origin);
-    			
+    			for (String chara2 : character4Type) {
+    				String[] split = chara2.split("");
+					Map<String, Object> map11 = new HashMap<>();
+					String chara11 = split[0];
+					Double value11 = aiJson.getDouble(chara11);
+					Map<String, Object> map22 = new HashMap<>();
+					String chara22 = split[1];
+					Double value22 = aiJson.getDouble(chara22);
+					if (null != value11) {
+						value22 = 1 - value11;
+					} else {
+						value11 = 1 - value22;
+					}
+					map11.put("name", chara11);
+					map11.put("value", (int) (value11 * 100));
+					radar.add(map11);
+					map22.put("name", chara22);
+					map22.put("value", (int) (value22 * 100));
+					radar.add(map22);
+    					
+    			}
     			
     		} else if (SurveyType.MBTI_28_QUESTION_SURVEY.equals(surveyType)) { // 问卷结果
+//    		} else if (4 == surveyId) {
     			if (StringUtils.isNotEmpty(origin)) {
     				// 遍历封装
     				for (String cha : characters) {
@@ -146,8 +217,9 @@ public class AnswerJsonServiceImpl implements IAnswerJsonService {
     							count++;
     						}
     					}
+    					Double value = count / 7.0;
     					map.put("name", cha);
-    					map.put("value", count);
+    					map.put("value", Math.round(value * 100));
     					radar.add(map);
     				}
     			}
@@ -164,6 +236,17 @@ public class AnswerJsonServiceImpl implements IAnswerJsonService {
     				String[] split = match.split(",");
     				List<SysUserPlus> matchPeople = getMatchPeople(Arrays.asList(split));
     				json.put("matchPeople", matchPeople);
+    				// 查询匹配性格
+    				String pmatch = "";
+    				for (String pm : split) {
+    	    			LambdaQueryWrapper<MbtiTypeDesc> pwrapper = new LambdaQueryWrapper<MbtiTypeDesc>();
+    	    			pwrapper.eq(MbtiTypeDesc::getCharaCode, mbti);
+    	    			MbtiTypeDesc pmbtidesc = mbtiTypeDescMapper.selectOne(pwrapper);
+    	    			String pcharaName = pmbtidesc.getCharaName();
+    	    			pmatch += pm + "（" + pcharaName + "），";
+    				}
+    				pmatch = pmatch.substring(0, pmatch.length() - 1);
+    				mbtiTypeDesc.setMatchMbti(pmatch);
     			}
     			json.put("mbtiTypeDesc", mbtiTypeDesc);
     		}
@@ -174,9 +257,12 @@ public class AnswerJsonServiceImpl implements IAnswerJsonService {
     		// 查询性格匹配的人员
     		json.put("answerJson", result);
     		json.put("radar", radar);
+    		json.put("code", 200);
     		return json;
     	}
-    	return null;
+    	json.put("code", 500);
+    	json.put("msg", "没有测试数据哦，请先测试！");
+    	return json;
     }
     
     /**
@@ -253,35 +339,120 @@ public class AnswerJsonServiceImpl implements IAnswerJsonService {
     }
     
     @Override
-    public int aiTest(AiTestVo vo) {
+    @Transactional(rollbackFor = Exception.class)
+    public JSONObject aiTest(AiTestVo vo) {
+    	JSONObject result = new JSONObject();
     	Long userId = vo.getUserId();
-    	// 调用接口得出mbti
-    	JSONObject json = modelApi.getMbti(vo.getUid(), vo.getUser(), vo.getUserToken());
-    	if (null != json) {
-    		String mbti = json.getString("type");
-    		JSONObject score = json.getJSONObject("dim_score");
-    		// 计算得分
-    		
-    		
-    		AnswerJson answer = new AnswerJson();
-    		answer.setUserId(userId.toString());
-    		answer.setCreateTime(new Date());
-    		answer.setAnswerResult(mbti);
-    		answer.setAnswerResultOrigin(score.toJSONString());
-    		
-			UserSurveyResult result = new UserSurveyResult();
-			result.setUserId(Long.valueOf(userId));
-			result.setAnswerResult(mbti);
-			result.setSurveyType(SurveyType.MBTI_AI_SURVEY_TEST); //ai测试
-			result.setAnswerResultOrigin(score.toJSONString());
-			result.setCreateTime(new Date());
-			boolean flag = userSurveyResultService.saveOrUpdate(result);
-			if (!flag) {
-				throw new ServiceException("测评结果存储失败！");
-			}
-			return 1;
-    	} 
-    	return 0;
+    	if (null == userId) {
+    		log.error("未获取到userId，参数错误！");
+    		throw new ServiceException("未获取到userId，参数错误！");
+    	}
+    	Long surveyId = vo.getSurveyId();
+    	if (null == surveyId) {
+    		surveyId = 1000L;
+    	}
+    	String aid = vo.getAid();
+    	if (StringUtils.isEmpty(aid)) { // 第一次请求
+    		// aid组合
+    		aid = userId + "-" + surveyId + "-" + System.currentTimeMillis();
+    		vo.setAid(aid); // 生成队列唯一标识
+        	// 发送到队列
+        	activeMQUtils.sendMessageToQueue(QueueDictionary.AI_TEST, vo);
+			result.put("code", 201);
+    	} else { // 后续轮询请求
+    		// 查询缓存中是否有anId
+    		JSONObject redisJson = redisCache.getCacheObject(aid);
+    		log.debug("轮询查询缓存中的数据为：" + redisJson);
+    		if (null != redisJson) {
+    			Integer code = redisJson.getInteger("code");
+    			String msg = redisJson.getString("msg");
+    			if (null != code) {
+    				if (code == 200) { // 正确结果
+    					Long anId = redisJson.getLong("data");
+    					result.put("anId", anId);
+    					result.put("code", 200);
+    				} else if (code == 201) { // 还在处理中
+    		        	// 重新发送到队列，重新请求
+    		        	activeMQUtils.sendMessageToQueue(QueueDictionary.AI_TEST, vo);
+    					result.put("code", 201);
+    					result.put("msg", msg);
+    				} else if (code == 500) { // 服务器异常
+    					result.put("code", 500);
+    					result.put("msg", msg);
+    				}
+    			} else {
+    				result.put("code", 201);
+    				result.put("msg", "系统正在生成AI测试结果，请稍等！");
+    			}
+    		} else { // 缓存中没有数据，说明还没有执行到
+    			result.put("code", 201);
+    			result.put("msg", "系统正在生成AI测试结果，请稍等！");
+    		}
+    	}
+    	result.put("params", vo);
+    	return result;
+    	
+    	
+
+//    	
+//    	log.debug("用户id:{}开始ai测试:", userId);
+//    	// 调用接口得出mbti
+//    	JSONObject json = modelApi.getMbti(vo.getUid(), vo.getUser(), vo.getUserToken(), null);
+//    	log.debug("用户id:{}ai测试结束，返回结果:{}", userId, json);
+//    	if (null != json) {
+//    		Integer code = json.getInteger("code");
+//    		if (null != code && 201 == code) {
+//    			result.put("code", 201);
+//    			result.put("msg", "系统繁忙，请稍后再试！");
+//    		}
+//    		String data = json.getString("data");
+//    		if (StringUtils.isNotEmpty(data) && "updating".equals(data)) { // 从数据库查询上一份记录
+////    			AnswerJson query = new AnswerJson();
+////    			query.setUserId(userId.toString());
+////    			query.setSurveyId(surveyId);
+////    			List<AnswerJson> answerList = answerJsonMapper.selectAnswerJsonLatest(query);
+////    			if (StringUtils.isEmpty(answerList)) { // 强制重新查询
+////    				json = modelApi.getMbti(vo.getUid(), vo.getUser(), vo.getUserToken(), "true");
+////    				
+////    			}
+//    			result.put("code", 201);
+//    			result.put("msg", "系统正在生成结果，请稍候！");
+//    			return result;
+//    		}
+//    		String mbti = json.getString("type");
+//    		JSONObject score = json.getJSONObject("dim_score");
+//    		// 计算得分
+//    		AnswerJson answer = new AnswerJson();
+//    		answer.setSurveyId(surveyId); // AI测试id固定1000
+//    		answer.setUserId(userId.toString());
+//    		answer.setCreateTime(new Date());
+//    		answer.setAnswerResult(mbti);
+//    		answer.setAnswerResultOrigin(score.toJSONString());
+//    		answer.setSurveyType(SurveyType.MBTI_AI_SURVEY_TEST);
+//    		answerJsonMapper.insertAnswerJson(answer);
+//    		
+////			UserSurveyResult result = new UserSurveyResult();
+////			result.setUserId(Long.valueOf(userId));
+//////			result.setSurveyId(surveyId);
+////			result.setAnswerResult(mbti);
+////			result.setSurveyType(SurveyType.MBTI_AI_SURVEY_TEST); //ai测试
+////			result.setAnswerResultOrigin(score.toJSONString());
+////			result.setCreateTime(new Date());
+////			boolean flag = userSurveyResultService.saveOrUpdate(result);
+////			LambdaQueryWrapper<UserSurveyResult> wrapper = new LambdaQueryWrapper<UserSurveyResult>();
+////			wrapper.eq(UserSurveyResult::getUserId, result.getUserId());
+////			wrapper.eq(UserSurveyResult::getSurveyId, result.getSurveyId());
+////			boolean flag = userSurveyResultService.saveOrUpdate(result, wrapper);
+////			if (!flag) {
+////				throw new ServiceException("测评结果存储失败！");
+////			}
+//    		result.put("code", 200);
+//    		result.put("anId", answer.getAnId());
+//			return result;
+//    	} 
+//		result.put("code", 500);
+//		result.put("msg", "系统繁忙，请稍后再试！");
+//    	return result;
     }
 
     /**
@@ -291,10 +462,11 @@ public class AnswerJsonServiceImpl implements IAnswerJsonService {
      * @return 结果
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public int insertAnswerJson(AnswerJson answerJson) {
-    	Log.debug("新增问卷答案结果，业务层接收到传过来的用户答题数据为userId：" + answerJson.getUserId());
-    	Log.debug("新增问卷答案结果，业务层接收到传过来的用户答题数据为surveyId：" + answerJson.getSurveyId());
-    	Log.debug("新增问卷答案结果，业务层接收到传过来的用户答题数据为json：" + answerJson.getAnswerJson());
+    	log.debug("新增问卷答案结果，业务层接收到传过来的用户答题数据为userId：" + answerJson.getUserId());
+    	log.debug("新增问卷答案结果，业务层接收到传过来的用户答题数据为surveyId：" + answerJson.getSurveyId());
+    	log.debug("新增问卷答案结果，业务层接收到传过来的用户答题数据为json：" + answerJson.getAnswerJson());
 		String userId = answerJson.getUserId();
 		Log.debug("新增问卷答案结果，业务层接收到传过来的用户id为：" + userId);
 		if (StringUtils.isEmpty(userId)) {
@@ -315,6 +487,7 @@ public class AnswerJsonServiceImpl implements IAnswerJsonService {
     		
     	}
         answerJson.setCreateTime(DateUtils.getNowDate());
+        answerJson.setSurveyType(SurveyType.MBTI_28_QUESTION_SURVEY);
         return answerJsonMapper.insertAnswerJson(answerJson);
     }
     
@@ -323,6 +496,7 @@ public class AnswerJsonServiceImpl implements IAnswerJsonService {
 	 * @param list
 	 */
 	private String getResult(List<AnswerPlus> list, AnswerJson answerJson) {
+		Long surveyId = answerJson.getSurveyId();
 		if (StringUtils.isNotEmpty(list)) {
 			Map<String, Integer> map = new HashMap<>();
 			List<String> character = MBTI16Type.CHARACTER_4_TYPE;
@@ -379,11 +553,16 @@ public class AnswerJsonServiceImpl implements IAnswerJsonService {
 			}
 			UserSurveyResult result = new UserSurveyResult();
 			result.setUserId(Long.valueOf(userId));
+//			result.setSurveyId(surveyId);
 			result.setAnswerResult(join); // 设置类型
 			result.setAnswerResultOrigin(answerJson.getAnswerResultOrigin()); // 设置原始数据
 			result.setSurveyType(SurveyType.MBTI_28_QUESTION_SURVEY); // 
 			result.setCreateTime(new Date());
 			boolean flag = userSurveyResultService.saveOrUpdate(result);
+//			LambdaQueryWrapper<UserSurveyResult> wrapper = new LambdaQueryWrapper<UserSurveyResult>();
+//			wrapper.eq(UserSurveyResult::getUserId, result.getUserId());
+//			wrapper.eq(UserSurveyResult::getSurveyId, result.getSurveyId());
+//			boolean flag = userSurveyResultService.saveOrUpdate(result, wrapper);
 			if (!flag) {
 				throw new ServiceException("测评结果存储失败！");
 			}

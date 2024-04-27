@@ -14,10 +14,11 @@
         <result property="userName" column="user_name"/>
         <result property="createTime" column="create_time"/>
         <result property="bookCode" column="book_code"/>
+        <result property="surveyType" column="survey_type"/>
     </resultMap>
 
     <sql id="selectAnswerJsonVo">
-        select an_id, survey_id, answer_json, answer_result, answer_result_origin, user_id, user_name, create_time, book_code
+        select an_id, survey_id, answer_json, answer_result, answer_result_origin, user_id, user_name, create_time, book_code, survey_type 
         from tb_answer_json
     </sql>
 
@@ -29,6 +30,7 @@
             <if test="userId != null  and userId != ''">and user_id = #{userId}</if>
             <if test="userName != null  and userName != ''">and user_name like concat('%', #{userName}, '%')</if>
             <if test="bookCode != null  and bookCode != ''">and book_code = #{bookCode}</if>
+            <if test="surveyType != null  and surveyType != ''">and survey_type = #{surveyType}</if>
         </where>
     </select>
     
@@ -40,6 +42,7 @@
             <if test="userId != null  and userId != ''">and user_id = #{userId}</if>
             <if test="userName != null  and userName != ''">and user_name like concat('%', #{userName}, '%')</if>
             <if test="bookCode != null  and bookCode != ''">and book_code = #{bookCode}</if>
+            <if test="surveyType != null  and surveyType != ''">and survey_type = #{surveyType}</if>
         </where>
         order by create_time desc
     </select>
@@ -60,6 +63,7 @@
             <if test="userName != null">user_name,</if>
             <if test="createTime != null">create_time,</if>
             <if test="bookCode != null">book_code,</if>
+            <if test="surveyType != null">survey_type,</if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="surveyId != null">#{surveyId},</if>
@@ -70,6 +74,7 @@
             <if test="userName != null">#{userName},</if>
             <if test="createTime != null">#{createTime},</if>
             <if test="bookCode != null">#{bookCode},</if>
+            <if test="surveyType != null">#{surveyType},</if>
         </trim>
     </insert>
 
@@ -82,6 +87,7 @@
             <if test="userName != null">user_name = #{userName},</if>
             <if test="createTime != null">create_time = #{createTime},</if>
             <if test="bookCode != null">book_code = #{bookCode},</if>
+            <if test="surveyType != null">survey_type = #{surveyType},</if>
         </trim>
         where an_id = #{anId}
     </update>

@@ -56,7 +56,7 @@ public interface IAnswerJsonService {
      * ai测试获取结果并存储
      * @param vo
      */
-    public int aiTest(AiTestVo vo);
+    public JSONObject aiTest(AiTestVo vo);
 
     /**
      * 修改问卷答案结果json

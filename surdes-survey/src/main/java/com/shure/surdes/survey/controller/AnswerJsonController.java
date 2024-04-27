@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.alibaba.fastjson.JSONObject;
 import com.shure.surdes.common.annotation.Log;
 import com.shure.surdes.common.core.controller.BaseController;
 import com.shure.surdes.common.core.domain.AjaxResult;
@@ -39,6 +40,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @CrossOrigin
 public class AnswerJsonController extends BaseController {
+	
     @Autowired
     private IAnswerJsonService answerJsonService;
 
@@ -106,13 +108,7 @@ public class AnswerJsonController extends BaseController {
     @Log(title = "用户AI测试", businessType = BusinessType.INSERT)
     @PostMapping("/ai")
     public AjaxResult aiTest(@RequestBody AiTestVo vo) {
-    	int row = answerJsonService.aiTest(vo);
-    	if (row == 1) {
-    		return AjaxResult.success();
-    	} else {
-    		return AjaxResult.error("AI测试失败，请手动填写问卷测试！");
-    	} 
-    		
+		return AjaxResult.success(answerJsonService.aiTest(vo));
     }
 
     /**

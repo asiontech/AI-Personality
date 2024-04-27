@@ -15,7 +15,27 @@
 	<description>问卷业务相关模块</description>
 
 	<dependencies>
-		
+
+		<!-- ActiveMQ -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-activemq</artifactId>
+		</dependency>
+
+
+		<!-- IJPay微信支付集成 -->
+		<dependency>
+			<groupId>com.github.javen205</groupId>
+			<artifactId>IJPay-WxPay</artifactId>
+		</dependency>
+
+		<!-- 支付宝支付 -->
+		<dependency>
+			<groupId>com.alipay.sdk</groupId>
+			<artifactId>alipay-sdk-java</artifactId>
+			<version>4.35.37.ALL</version>
+		</dependency>
+
 		<dependency>
 			<groupId>com.shure.surdes</groupId>
 			<artifactId>surdes-system</artifactId>
@@ -32,7 +52,7 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		
+
 		<!-- Lombok dependency -->
 		<dependency>
 			<groupId>org.projectlombok</groupId>

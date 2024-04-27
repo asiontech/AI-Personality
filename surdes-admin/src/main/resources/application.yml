@@ -17,19 +17,58 @@ surdes:
   captchaType: math
   # 若依版本
   ruoyi-version: 3.7.0
+  price: 4.9
 
 # 模型分析服务接口
 model:
-  url: http://192.168.102.23:1230/mbti
+  url: http://s2.gkcns.com:1230/mbti
+
+#测试配置
+#aliyun:
+#  app-id: 9021000136650598
+#  notify-url: http://s2.gkcns.com:2017/pay #支付回调地址
+##  notify-url: http://s2.gkcns.com:2017/dev-api/ali/callback #支付回调地址
+#  #应用私钥
+#  private-key: MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCUttHggv86CwEQnYtlhN4xI3XeLetT8RVwdccXHPQ0rQ7oluz3ubSbgLR9tYB0ekNAKuub5kOYChQrymOvyP3GLO8d8LaEz2YUzvUNsPQWSVwDujUG5iDCSwVQwbljX186nhAgK3xPh1Gfo6sb+QypfwGeqDrjd6Dz3z75pVmhVylcQjdmkLUsb73E2ixdaMDloiXeYP5NIWILLoRiEVq1COZJyVwYkRRSng4AbvVFwmgcna9qwbLRReD64WXFBklQoXQeD8bcKL88qhj+EGOWSk/jAUFXmO+9QXuIk6x2/1VXXfJAXcQwcF9G5xz8+4+LpOsegKC/ApTSFLuUJB7JAgMBAAECggEAemofS1spsuK6Bq5Yv8FmkTZqYPCVpSxvhHo+3yTDVNUbz5PlDmo8ZEDG0i/kxHyb/ScXeOZLv8yUHBPmiR2+4DG+x3uNErgShJBzociGtA3BA4R0/+/RCX5tqrM84rLwFbVk+sYw9toh83HreQRCSwe0EqDSkMm5oOWk1iUpKafu/P6NvIuihJoJ48ynKoZNyJuK6M0Lcv1hFC+w7uOSkJ3ou297wqUCdyoLjnbXmau6MAH+FPMq8+He7cJZ6jsi8gBIrdU74rFRDZvX/Rz9YaEW81qejte9lHULyjvaUtHXshAMec9csDNwqEJSr0ltN5onz2wq4yzcL+8sQbvwLQKBgQDQrHNw3tDFzLMs36ObX0X2knihzx9R/0wR0DRk6m8xu7Hzg3+t2P1ofpPylTcxwNMbxAIr1ca9SlWwq7ncCXTKZDbFdqGRnVfawvz1PyB1dg01mTcS96Wa9qD8YtM50BSQ5YRKuYBCvsh5YCDiJWB0lncCn9Ng38Ck/BHF4ZKr6wKBgQC2cSH2r6R9+0dS6DDQq52uMc4i0ewnsZeCTk5fRWy6vgKrHNfFbJyca00mwz0DCLQTikuyKvUajiISv0Nd2DAGRC/AKzJGYteTQN/Ym3+qe2oemYYkXVRjBBFAO01jZuCLF6COIoZK1zsBjehIeQxtgi/jyhYDHrDExveJY5W3GwKBgQDIGVXpmgAgbJY0JY/BYa65LuM2ZmLmQiUzv68+Rf+ydQXDOQmqLzVwilBcgfGXaAwHyAE8/5W/1hQtgb6L3RV9LnPHDmcINxUT1X6zvYDmofkwuGczbP4EhxMAcdOS0JGoEC63aQIw/rlGioN919GSeuZMQe50KpuUmZKBajk3WQKBgDlNP0Wj1R5clgJMO0jPHi9gJUZ6eJnfBZ8/yQ3TWFsu4terr3mqq2XVrd3G5JrXWPfqL+w94c39ZmZM/HO1OyA8umK5Lok88kilz6jQ7kA1kxcZUTCKv755wJFUDvJxlYUaXqtF3LgU8cuDLrnUizq58SCykEdalFq5w3W7eYKRAoGBAMfIC4CyI2Oe1rZJmy7ZulOduh0/fOHY3B6hMl21Sp0aUY2wiJMhCJTNtaUroNctZRjF7uY4RK/h4TTCLVkmleie1Qa1DpFyuTFPbJcTgKiBhuHEj3ESWNoiXNLfcCCRYtI0+duZcu2jAq1sP3401sJMEisGTiERCxBlvJRdGox2
+#  #应用公钥
+#  app-public-key: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAlLbR4IL/OgsBEJ2LZYTeMSN13i3rU/EVcHXHFxz0NK0O6Jbs97m0m4C0fbWAdHpDQCrrm+ZDmAoUK8pjr8j9xizvHfC2hM9mFM71DbD0FklcA7o1BuYgwksFUMG5Y19fOp4QICt8T4dRn6OrG/kMqX8Bnqg643eg898++aVZoVcpXEI3ZpC1LG+9xNosXWjA5aIl3mD+TSFiCy6EYhFatQjmSclcGJEUUp4OAG71RcJoHJ2vasGy0UXg+uFlxQZJUKF0Hg/G3Ci/PKoY/hBjlkpP4wFBV5jvvUF7iJOsdv9VV13yQF3EMHBfRucc/PuPi6TrHoCgvwKU0hS7lCQeyQIDAQAB
+#   #应用公钥路径
+#  app-public-key-path: 
+#  #支付宝公钥
+#  ali-public-key: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA0JamarupTZihMmVQ1t4MEpFMiFee+4qJDpp6sEE8qEHBU/WQrAnZxFXSGSxuPGnY5KvyCQIPPnWQDBjfP6dGOwjWb5nvaoe28/1qCsa3BZJNOEeiffBS1u9MrJ5NmfF89PWPAemQCcoscbcgH70YTKrYfNl45ijRaU3Cn4NS77vm3dcnCXAnGeaFoPov66POXrUBA3cicYaVKE6cyIJYnbQ9CFOy/8PVHDujufrShywfyjMcwmCNETmty6ngItaDw4boCo0s665tfAcIa5hNwpHt6KJpYERTNsXkqBnHBc0wnFEvg4QacKwfJInB2V05yPUOQTnD/V5H44QvcZc4CQIDAQAB
+#  #支付宝公钥路径
+#  ali-public-key-path: 
+#  #支付宝根证书路径
+#  ali-root-key-path: 
+#线上配置
+aliyun:
+  app-id: 2021004142643039
+  server-url: https://openapi.alipay.com/gateway.do
+#  notify-url: http://s2.gkcns.com:2017/payCallback #支付回调地址
+  notify-url: https://dawu.asiontech.com/payCallback #支付回调地址
+#  notify-url: http://s2.gkcns.com:2017/dev-api/ali/callback #支付回调地址
+  #应用私钥
+  private-key: MIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQCukmmA20kW3q9hzwSb/sZm+r861L6rMsNnFfq3q7lsxZU0ZseuhMYpcLCv6c3x7cVnhr1roTSUq4JbGCrS4LoRupZvYSjJzrXgfzFyFEhNry95Gou+OchNzKKr3nWkUa5z/pTBJ6JFoZG83f/SL6yPTFohaZY+07ZTay6VPDcDf26fUhrtpd6C/Q2hqzlTYOZuKLnnSPSVYKbquZUsN87UvWPJ7YFH4T77ZlcznXjxAItcb1ukLUlSWcnoegjLaU8kJxEsJmqFgzw0IioYmYPs5YEFVOhFcrIlDDzLgPuIsEnS7pzvQV9gaelb3TPvaAfARYh80z4Yr2Equo+z6mYNAgMBAAECggEBAKzm2pQDnNqH6FEJh1kx+DPaujh8qfRKLPsW6+Gqtdajw2nJOpEBdHtq37T77zxk8ZXeABJv8fImBNBQmWmPpvsUQRdDtfBbSgx2LfT9XbeDgZOC1VGtTVSxD5UGmqILPKwqRA8jQDeTFRNpFY2KJnEvgD2DpInJitYIXHT21M4ib3IKBTQk4a7Ic1W9L3ixiZ7ejWj4gd/WZvNatE5/LljNXPyD8IZwKn/Xej4ZkTznqgdphoaZfwJ8P5D072gIIPWow50GP3gz4CZxT5I/+XlD6d9Dk+W+CWYaDTGFGwCmNVykjFhqTYGx4tkars6eGvxLu4DW1DlGycPuUVJdu8kCgYEA363DtJRLzJ8ZsCtJrIFyEPhH8hzJ0+ief7xvpTzX7EFFHga1T6V2rFjisVeyQ5eIMLcLb0lu+QTZ5v620slyP3+OAfBhT4si8vdbOAxUvWw/fRtr8MN+oSMNWSObjBOzjUcpy+iksUZPVC9rfFPluLLdg/rT00vGLNlX6OV3DXcCgYEAx8wbW8tg0I52Vr3BkGTK8WG/YdetcRUI3U3hiPppYvdxBkAIeejF7RWvTIPeFewmIKR6IruXHNWpltaHrhKYMKmNc5NZZx4cUrGVHCu2He80+l1h4gYZRNaZUf4iAxAtApQrcwG+H/aINLGHn0KsKcvnH4V7m2uyeXGzl3pIeZsCgYBQ5hDtQ+FyXWy2CcH4sUynFJU43O6mRPDmdCnREoNpwGWWKYj0CH02cmNzDqu7xJeOPvXUxzNqvzVsVV2cOR2oF6Mt0lnvofv+8jW8vMD9TaRcxEky6BHph7rxLW65p/p9s2pLhJXkQ/C3Gvt+GP3x4kc5z8NDHZnMaMNhyXRYmwKBgQCtzT3XYln70pHa7wLcyvFHfVJwmJ/GCRhG+yLAd6UJdFqbp0Q4WGck0IJHu0aMJ3sbVjjw0eKoMK1wC3rH0GEXo8bqzTkuXKEixlwBv3yTGa0qReWKKuf8W/nPu5R2ubGN1rrdNpzfTSQ7QlvKDMObMEcDwqg+ETeWMXSaxsMZFQKBgQCUFNkcEfWWXsSp56j4QCPmEEBk2ePPo8n33pErXVnN3omXFbOCvVkvyW4ZKMH0179mvEAIqXfxmlWlgxZhRG3VnPh2W0vOARSLYyEy5rTFY6VqOhcSCOgQGuQfeDSbQckNSg3ZJvwZr72EP2FsBmkNEP50HMMnZwv6FyFMFM2YTw==
+  #应用公钥
+  app-public-key: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEArpJpgNtJFt6vYc8Em/7GZvq/OtS+qzLDZxX6t6u5bMWVNGbHroTGKXCwr+nN8e3FZ4a9a6E0lKuCWxgq0uC6EbqWb2Eoyc614H8xchRITa8veRqLvjnITcyiq951pFGuc/6UwSeiRaGRvN3/0i+sj0xaIWmWPtO2U2sulTw3A39un1Ia7aXegv0Noas5U2Dmbii550j0lWCm6rmVLDfO1L1jye2BR+E++2ZXM5148QCLXG9bpC1JUlnJ6HoIy2lPJCcRLCZqhYM8NCIqGJmD7OWBBVToRXKyJQw8y4D7iLBJ0u6c70FfYGnpW90z72gHwEWIfNM+GK9hKrqPs+pmDQIDAQAB
+   #应用公钥路径
+  app-public-key-path: 
+  #支付宝公钥
+  ali-public-key: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA1H1zHCNOcyQLqSZDvYqNjaIRc2qR8+FbJtmm0yXooW8JqR1F8Sa7TVICObv+raafEVSc3xuS5JQyRQo0oKj/k2hQuFqul20NeeQwSD6kac3onelXJQL9iJqHcK+xIthIl/nEy4ZbqKrWJWS8stFh7vPq7081cdG5AsoMOuj53pebfCxO/TNI98cMTHKk9mxPH9cCOWeZbT0oQlNHvbV27kvv4OJ0GqABxleoeKE8TZJgltu2Utp8MFdQdL461uN3RHDBK7yDlr6AfG87U1cweJjI11GSmj9lO82oDJYa5NuwrcImN5NSGlDarjquMOjbCD4CgRyXKaWi54ecNBGoOQIDAQAB
+  #支付宝公钥路径
+  ali-public-key-path: 
+  #支付宝根证书路径
+  ali-root-key-path: 
   
 justauth:
   weibo:
-#    clientId: 2008830081
-#    clientSecret: d0985ddca849ef00d1de73d61b231d8b
-#    redirectUri: https://dawu.asiontech.com/callback
-    clientId: 613550917
-    clientSecret: 449de11598449c7fd2ec29b34d8d32c1
-    redirectUri: http://s2.gkcns.com:2017/callback
+    clientId: 2008830081
+    clientSecret: d0985ddca849ef00d1de73d61b231d8b
+    redirectUri: https://dawu.asiontech.com/callback
+#    clientId: 613550917
+#    clientSecret: 449de11598449c7fd2ec29b34d8d32c1
+#    redirectUri: http://s2.gkcns.com:2017/callback
+    
 
 # 开发环境配置
 server:
@@ -55,6 +94,11 @@ logging:
 
 # Spring配置
 spring:
+  activemq:
+    broker-url: tcp://activemq:61616
+#    broker-url: tcp://192.168.101.61:61616
+    user: admin
+    password: zwgkqaz@2024
   # 资源信息
   messages:
     # 国际化资源文件路径
@@ -76,8 +120,8 @@ spring:
   # redis 配置
   redis:
     # 地址
-#    host: redis
-    host: 192.168.101.51
+    host: redis
+#    host: 192.168.101.51
     # 端口，默认为6379
     port: 6379
     # 数据库索引

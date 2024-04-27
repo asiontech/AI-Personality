@@ -102,7 +102,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
                 .antMatchers("/survey/survey/list/**", "/survey/question/list/**", "/survey/options/list/**", "/survey/survey/list").permitAll()
 //                .antMatchers("/survey/survey/list/**", "/survey/question/list/**", "/survey/options/list/**", "/survey/survey/list").anonymous()
                 .antMatchers("/survey/survey/list", "/survey/question/list", "/survey/options/list").permitAll()
-                
+                .antMatchers("/ali/**").permitAll()
 //                .antMatchers("/survey/json").permitAll()
                 .antMatchers(
                         HttpMethod.GET,

@@ -52,8 +52,19 @@ public class Survey extends BaseEntity {
     
     /** 测评状态finish */
     private String testStaus;
+    
+    /** 支付状态pay */
+    private String payStatus;
 
-    /**
+    public String getPayStatus() {
+		return payStatus;
+	}
+
+	public void setPayStatus(String payStatus) {
+		this.payStatus = payStatus;
+	}
+
+	/**
      * 数据状态（1：有效，0：无效）
      */
     @Excel(name = "数据状态", readConverterExp = "1=：有效，0：无效")

@@ -54,8 +54,30 @@ public class AnswerJson extends BaseEntity {
      */
     @Excel(name = "账套")
     private String bookCode;
+    
+    /** 问卷类型 */
+    private String surveyType;
+    
+    /** 订单时间戳 */
+    private Long orderTimestamp;
 
-    public void setAnId(Long anId) {
+    public Long getOrderTimestamp() {
+		return orderTimestamp;
+	}
+
+	public void setOrderTimestamp(Long orderTimestamp) {
+		this.orderTimestamp = orderTimestamp;
+	}
+
+	public String getSurveyType() {
+		return surveyType;
+	}
+
+	public void setSurveyType(String surveyType) {
+		this.surveyType = surveyType;
+	}
+
+	public void setAnId(Long anId) {
         this.anId = anId;
     }
 

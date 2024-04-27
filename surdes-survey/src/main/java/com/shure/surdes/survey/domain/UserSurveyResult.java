@@ -20,6 +20,8 @@ public class UserSurveyResult {
 	@TableId
 	private Long userId;
 	
+//	private Long surveyId;
+	
 	/** 测试结果 */
 	private String answerResult;
 	
