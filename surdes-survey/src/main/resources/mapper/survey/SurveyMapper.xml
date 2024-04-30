@@ -9,6 +9,7 @@
         <result property="surveyName" column="survey_name"/>
         <result property="surveyDesc" column="survey_desc"/>
         <result property="surveyType" column="survey_type"/>
+        <result property="surveyTypeChar" column="survey_type_char"/>
         <result property="surveyStatus" column="survey_status"/>
         <result property="createTime" column="create_time"/>
         <result property="userId" column="user_id"/>
@@ -21,6 +22,7 @@
                survey_name,
                survey_desc,
                survey_type,
+               survey_type_char,
                survey_status,
                create_time,
                user_id,
@@ -32,6 +34,7 @@
     <select id="selectSurveyList" parameterType="Survey" resultMap="SurveyResult">
         <include refid="selectSurveyVo"/>
         <where>
+        	<if test="surveyId != null  and surveyId != ''">and survey_id = #{surveyId}</if>
             <if test="surveyName != null  and surveyName != ''">and survey_name like concat('%', #{surveyName}, '%')</if>
             <if test="surveyDesc != null  and surveyDesc != ''">and survey_desc = #{surveyDesc}</if>
             <if test="surveyType != null  and surveyType != ''">and survey_type = #{surveyType}</if>

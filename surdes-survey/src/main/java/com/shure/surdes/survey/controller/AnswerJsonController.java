@@ -43,7 +43,7 @@ public class AnswerJsonController extends BaseController {
 	
     @Autowired
     private IAnswerJsonService answerJsonService;
-
+    
     /**
      * 查询问卷答案结果json列表
      */
@@ -61,6 +61,24 @@ public class AnswerJsonController extends BaseController {
     @GetMapping("/latest")
     public AjaxResult getLatest(AnswerJson answerJson) {
     	return AjaxResult.success(answerJsonService.selectAnswerJsonLatest(answerJson));
+    }
+    
+    @ApiOperation(value = "查询用户的disc状态")
+    @GetMapping("/disc")
+    public AjaxResult getUserDisc(Long userId) {
+    	return AjaxResult.success(answerJsonService.getUserDisc(userId));
+    }
+    
+    @ApiOperation(value = "查询性格匹配用户")
+    @GetMapping("/user/match")
+    public AjaxResult getMatchUser(String mbti, Integer pageNum, Integer pageSize) {
+    	return AjaxResult.success(answerJsonService.getMatchUser(mbti, pageNum, pageSize));
+    }
+    
+    @ApiOperation(value = "查询性格相同用户")
+    @GetMapping("/user/same")
+    public AjaxResult getSameUser(String mbti, Integer pageNum, Integer pageSize) {
+    	return AjaxResult.success(answerJsonService.getSameUser(mbti, pageNum, pageSize));
     }
 
     /**
@@ -101,7 +119,12 @@ public class AnswerJsonController extends BaseController {
      	} catch (Exception e) {
 //			return AjaxResult.error("获取用户id失败，请重新登录！");
 		}
-        return toAjax(answerJsonService.insertAnswerJson(answerJson));
+    	JSONObject result = answerJsonService.insertAnswerJson(answerJson);
+    	if (null != result) {
+    		return AjaxResult.success(result);
+    	} else {
+    		return AjaxResult.error();
+    	}
     }
     
     @ApiOperation(value = "用户AI测试")

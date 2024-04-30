@@ -10,7 +10,7 @@ surdes:
   demoEnabled: true
   # 文件路径 示例（ Windows配置D:/surdes/uploadPath，Linux配置 /home/surdes/uploadPath）
 #  profile: D:/profile/surdes/
-  profile: /home/profile/surdes/
+  profile: /home/profile/
   # 获取ip地址开关
   addressEnabled: false
   # 验证码类型 math 数组计算 char 字符验证
@@ -26,7 +26,8 @@ model:
 #测试配置
 #aliyun:
 #  app-id: 9021000136650598
-#  notify-url: http://s2.gkcns.com:2017/pay #支付回调地址
+#  server-url: https://openapi-sandbox.dl.alipaydev.com/gateway.do
+#  notify-url: http://s2.gkcns.com:2017/payCallback #支付回调地址
 ##  notify-url: http://s2.gkcns.com:2017/dev-api/ali/callback #支付回调地址
 #  #应用私钥
 #  private-key: MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCUttHggv86CwEQnYtlhN4xI3XeLetT8RVwdccXHPQ0rQ7oluz3ubSbgLR9tYB0ekNAKuub5kOYChQrymOvyP3GLO8d8LaEz2YUzvUNsPQWSVwDujUG5iDCSwVQwbljX186nhAgK3xPh1Gfo6sb+QypfwGeqDrjd6Dz3z75pVmhVylcQjdmkLUsb73E2ixdaMDloiXeYP5NIWILLoRiEVq1COZJyVwYkRRSng4AbvVFwmgcna9qwbLRReD64WXFBklQoXQeD8bcKL88qhj+EGOWSk/jAUFXmO+9QXuIk6x2/1VXXfJAXcQwcF9G5xz8+4+LpOsegKC/ApTSFLuUJB7JAgMBAAECggEAemofS1spsuK6Bq5Yv8FmkTZqYPCVpSxvhHo+3yTDVNUbz5PlDmo8ZEDG0i/kxHyb/ScXeOZLv8yUHBPmiR2+4DG+x3uNErgShJBzociGtA3BA4R0/+/RCX5tqrM84rLwFbVk+sYw9toh83HreQRCSwe0EqDSkMm5oOWk1iUpKafu/P6NvIuihJoJ48ynKoZNyJuK6M0Lcv1hFC+w7uOSkJ3ou297wqUCdyoLjnbXmau6MAH+FPMq8+He7cJZ6jsi8gBIrdU74rFRDZvX/Rz9YaEW81qejte9lHULyjvaUtHXshAMec9csDNwqEJSr0ltN5onz2wq4yzcL+8sQbvwLQKBgQDQrHNw3tDFzLMs36ObX0X2knihzx9R/0wR0DRk6m8xu7Hzg3+t2P1ofpPylTcxwNMbxAIr1ca9SlWwq7ncCXTKZDbFdqGRnVfawvz1PyB1dg01mTcS96Wa9qD8YtM50BSQ5YRKuYBCvsh5YCDiJWB0lncCn9Ng38Ck/BHF4ZKr6wKBgQC2cSH2r6R9+0dS6DDQq52uMc4i0ewnsZeCTk5fRWy6vgKrHNfFbJyca00mwz0DCLQTikuyKvUajiISv0Nd2DAGRC/AKzJGYteTQN/Ym3+qe2oemYYkXVRjBBFAO01jZuCLF6COIoZK1zsBjehIeQxtgi/jyhYDHrDExveJY5W3GwKBgQDIGVXpmgAgbJY0JY/BYa65LuM2ZmLmQiUzv68+Rf+ydQXDOQmqLzVwilBcgfGXaAwHyAE8/5W/1hQtgb6L3RV9LnPHDmcINxUT1X6zvYDmofkwuGczbP4EhxMAcdOS0JGoEC63aQIw/rlGioN919GSeuZMQe50KpuUmZKBajk3WQKBgDlNP0Wj1R5clgJMO0jPHi9gJUZ6eJnfBZ8/yQ3TWFsu4terr3mqq2XVrd3G5JrXWPfqL+w94c39ZmZM/HO1OyA8umK5Lok88kilz6jQ7kA1kxcZUTCKv755wJFUDvJxlYUaXqtF3LgU8cuDLrnUizq58SCykEdalFq5w3W7eYKRAoGBAMfIC4CyI2Oe1rZJmy7ZulOduh0/fOHY3B6hMl21Sp0aUY2wiJMhCJTNtaUroNctZRjF7uY4RK/h4TTCLVkmleie1Qa1DpFyuTFPbJcTgKiBhuHEj3ESWNoiXNLfcCCRYtI0+duZcu2jAq1sP3401sJMEisGTiERCxBlvJRdGox2
@@ -89,7 +90,7 @@ server:
 # 日志配置
 logging:
   level:
-    com.shure.surdes: debug
+    com.shure.surdes: info
     org.springframework: warn
 
 # Spring配置

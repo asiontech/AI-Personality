@@ -16,11 +16,14 @@ public class MBTI16Type {
 	/** 按顺序8 */
 	public final static List<String> CHARACTER_8_TYPE = new ArrayList<>();
 	
+	/** DISC4个类型 */
+	public final static List<String> DISC_4_TYPE = new ArrayList<>();
+	
 	static {
-		CHARACTER_4_TYPE.add("EI");
-		CHARACTER_4_TYPE.add("NS");
-		CHARACTER_4_TYPE.add("FT");
-		CHARACTER_4_TYPE.add("JP");
+		CHARACTER_4_TYPE.add("EI"); //21
+		CHARACTER_4_TYPE.add("NS"); //26
+		CHARACTER_4_TYPE.add("FT"); //24
+		CHARACTER_4_TYPE.add("JP"); //22
 		
 		CHARACTER_8_TYPE.add("I");
 		CHARACTER_8_TYPE.add("P");
@@ -30,5 +33,10 @@ public class MBTI16Type {
 		CHARACTER_8_TYPE.add("N");
 		CHARACTER_8_TYPE.add("S");
 		CHARACTER_8_TYPE.add("E");
+		
+		DISC_4_TYPE.add("D");
+		DISC_4_TYPE.add("I");
+		DISC_4_TYPE.add("S");
+		DISC_4_TYPE.add("C");
 	}
 }

@@ -37,6 +37,9 @@ public class Survey extends BaseEntity {
      */
     @Excel(name = "问卷类型")
     private String surveyType;
+    
+    /** 问卷类型参数 */
+    private String surveyTypeChar;
 
     /**
      * 问卷状态（0：未发布，1：收集中，2：已结束）
@@ -44,7 +47,15 @@ public class Survey extends BaseEntity {
     @Excel(name = "问卷状态", readConverterExp = "0=：未发布，1：收集中，2：已结束")
     private String surveyStatus;
 
-    /**
+    public String getSurveyTypeChar() {
+		return surveyTypeChar;
+	}
+
+	public void setSurveyTypeChar(String surveyTypeChar) {
+		this.surveyTypeChar = surveyTypeChar;
+	}
+
+	/**
      * 创建人
      */
     @Excel(name = "创建人")

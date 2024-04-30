@@ -56,10 +56,11 @@ public class ModelApi {
 			json = exchange.getBody();
 			log.debug(json.toString());
 			Integer code = json.getInteger("status");
-			if (200 == code) {
-				json = json.getJSONObject("data");
-				return json;
-			}
+//			if (200 == code) {
+//				json = json.getJSONObject("data");
+//				return json;
+//			}
+			return json;
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.error("接口调用失败！");

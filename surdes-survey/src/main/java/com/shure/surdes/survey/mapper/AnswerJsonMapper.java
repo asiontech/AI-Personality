@@ -30,7 +30,7 @@ public interface AnswerJsonMapper {
     public List<AnswerJson> selectAnswerJsonList(AnswerJson answerJson);
     
     /**
-     * 查询用户最新的答案结果
+     * 查询用户最新的答案结果，新添加限制，只查询最新的一条数据
      * @param answerJson
      * @return
      */

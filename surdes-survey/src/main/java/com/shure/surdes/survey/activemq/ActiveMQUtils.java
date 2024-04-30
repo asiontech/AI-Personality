@@ -17,7 +17,7 @@ public class ActiveMQUtils {
 
     // 发送消息到队列
     public void sendMessageToQueue(String queueName, Object obj) {
-    	log.debug("发送消息:{},到队列:{}", obj.toString(), queueName);
+    	log.info("发送消息:{},到队列:{}", obj.toString(), queueName);
         String jsonStr= JSON.toJSONString(obj);
         jmsTemplate.convertAndSend(queueName, jsonStr);
     }

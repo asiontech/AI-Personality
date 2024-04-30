@@ -42,42 +42,56 @@ public class TopicListner {
 		Long userId = vo.getUserId();
 		Long surveyId = vo.getSurveyId();
 		String aid = vo.getAid();
+	  	Integer retest = vo.getRetest(); // 强制更新字段
+	  	String update = null;
+    	if (null != retest && 1 == retest) {
+    		update = "true";
+    	}
 		// 业务处理
     	// 调用接口得出mbti
-    	JSONObject json = modelApi.getMbti(vo.getUid(), vo.getUser(), vo.getUserToken(), null);
+    	JSONObject json = modelApi.getMbti(vo.getUid(), vo.getUser(), vo.getUserToken(), update);
     	log.debug("用户id:{}ai测试结束，返回结果:{}", userId, json);
     	JSONObject redisJson = new JSONObject();
     	if (null != json) {
-    		Integer code = json.getInteger("code");
+    		Integer code = json.getInteger("status");
     		if (null != code && 201 == code) {
     			redisJson.fluentPut("code", 500);
     			redisJson.fluentPut("msg", "系统繁忙，请稍后重试！");
     			redisCache.setCacheObject(aid, redisJson, 30, TimeUnit.MINUTES);
+    			log.debug("AI测试队列缓存消息：{}:{}", userId, redisJson.toString());
+    			return;
     		}
     		String data = json.getString("data");
     		if (StringUtils.isNotEmpty(data) && "updating".equals(data)) { // 从数据库查询上一份记录
     			redisJson.fluentPut("code", 201);
     			redisJson.fluentPut("msg", "系统正在生成AI测试结果，请稍等！");
     			redisCache.setCacheObject(aid, redisJson, 30, TimeUnit.MINUTES);
+    			log.debug("AI测试队列缓存消息：{}:{}", userId, redisJson.toString());
+    			return;
     		}
-    		String mbti = json.getString("type");
-    		JSONObject score = json.getJSONObject("dim_score");
-    		// 计算得分
-    		AnswerJson answer = new AnswerJson();
-    		answer.setSurveyId(surveyId); // AI测试id固定1000
-    		answer.setUserId(userId.toString());
-    		answer.setCreateTime(new Date());
-    		answer.setAnswerResult(mbti);
-    		answer.setAnswerResultOrigin(score.toJSONString());
-    		answer.setSurveyType(SurveyType.MBTI_AI_SURVEY_TEST);
-    		answerJsonMapper.insertAnswerJson(answer);
-    		redisJson.fluentPut("code", 200);
-    		redisJson.fluentPut("data", answer.getAnId());
-    		redisCache.setCacheObject(aid, redisJson, 30, TimeUnit.MINUTES);
+    		if (null != code && 200 == code) {
+    			JSONObject jsonObject = json.getJSONObject("data");
+    			String mbti = jsonObject.getString("type");
+    			JSONObject score = jsonObject.getJSONObject("dim_score");
+    			// 计算得分
+    			AnswerJson answer = new AnswerJson();
+    			answer.setSurveyId(surveyId); // AI测试id固定1000
+    			answer.setUserId(userId.toString());
+    			answer.setCreateTime(new Date());
+    			answer.setAnswerResult(mbti);
+    			answer.setAnswerResultOrigin(score.toJSONString());
+    			answer.setSurveyType(SurveyType.MBTI_AI_SURVEY_TEST);
+    			answerJsonMapper.insertAnswerJson(answer);
+    			redisJson.fluentPut("code", 200);
+    			redisJson.fluentPut("data", answer.getAnId());
+    			redisCache.setCacheObject(aid, redisJson, 30, TimeUnit.MINUTES);
+    			log.debug("AI测试队列缓存消息：{}:{}", userId, redisJson.toString());
+    		}
     	} else {
 			redisJson.fluentPut("code", 500);
 			redisJson.fluentPut("msg", "系统繁忙，请稍后重试！");
 			redisCache.setCacheObject(aid, redisJson, 30, TimeUnit.MINUTES);
+			log.debug("AI测试队列缓存消息：{}:{}", userId, redisJson.toString());
     	}
 	}
 }

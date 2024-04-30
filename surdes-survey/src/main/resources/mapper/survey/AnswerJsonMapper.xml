@@ -44,7 +44,7 @@
             <if test="bookCode != null  and bookCode != ''">and book_code = #{bookCode}</if>
             <if test="surveyType != null  and surveyType != ''">and survey_type = #{surveyType}</if>
         </where>
-        order by create_time desc
+        order by create_time desc limit 1
     </select>
 
     <select id="selectAnswerJsonByAnId" parameterType="Long" resultMap="AnswerJsonResult">

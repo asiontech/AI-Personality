@@ -35,6 +35,31 @@ public interface IAnswerJsonService {
      * @return
      */
     public JSONObject selectAnswerJsonLatest(AnswerJson answerJson);
+    
+    /**
+     * 查询用户的disc状态数据
+     * @param userId
+     * @return
+     */
+    public JSONObject getUserDisc(Long userId);
+    
+    /**
+     * 查询性格匹配用户
+     * @param mbti
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
+    public JSONObject getMatchUser(String mbti, Integer pageNum, Integer pageSize);
+    
+    /**
+     * 查询性格相同用户
+     * @param mbti
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
+    public JSONObject getSameUser(String mbti, Integer pageNum, Integer pageSize);
 
     /**
      * 根据问卷主键查询问卷采集内容
@@ -50,7 +75,7 @@ public interface IAnswerJsonService {
      * @param answerJson 问卷答案结果json
      * @return 结果
      */
-    public int insertAnswerJson(AnswerJson answerJson);
+    public JSONObject insertAnswerJson(AnswerJson answerJson);
    
     /**
      * ai测试获取结果并存储

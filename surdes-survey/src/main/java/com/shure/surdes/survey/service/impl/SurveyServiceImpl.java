@@ -94,6 +94,14 @@ public class SurveyServiceImpl implements ISurveyService {
     			}
     		}
     	}
+//    	if (list.size() > 2) {
+//    		int index1 = 0;
+//    		int index2 = 1;
+//    		
+//    		Survey temp = list.remove(index2);
+//    		
+//    		list.add(index1, temp);
+//    	}
     	return list;
     }
 

@@ -1,10 +1,11 @@
 package com.shure.surdes.survey.domain;
 
-import org.springframework.data.annotation.Transient;
+import java.util.Date;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.Data;
 
@@ -71,5 +72,13 @@ public class SysUserPlus {
     
     @TableField(exist = false)
     private String mbti;
+    
+    /** 插入时间 */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date createTime;
+    
+    /** 更新时间 */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date updateTime;
     
 }

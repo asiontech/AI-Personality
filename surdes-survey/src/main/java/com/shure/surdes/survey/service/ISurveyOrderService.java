@@ -29,4 +29,5 @@ public interface ISurveyOrderService extends IService<SurveyOrder> {
 	 */
 	public SurveyOrder callbackUpdateOrder(String outTradeNo, String tradeNo, String payAmount, 
 			String sellerId, String timestamp, Integer status);
+	
 }

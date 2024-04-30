@@ -30,4 +30,7 @@ public class AiTestVo {
     
     /** 队列唯一标识，userId+surveyId+时间戳 */
     private String aid;
+    
+    /** 是否重新测试 */
+    private Integer retest;
 }

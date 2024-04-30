@@ -120,7 +120,7 @@ public class AliPayController {
             	String timestamp = params.get("timestamp");
             	// 更新订单状态，记录回调信息
             	SurveyOrder order = surveyOrderService.callbackUpdateOrder(outTradeNo, tradeNo, totalAmount, sellerId, timestamp, OrderPayStatus.HAVE_PAY);
-                log.debug("回调保存订单信息：" + order);
+                log.info("回调保存订单信息：" + order);
             	// 如果签名验证正确，返回success
                 return AjaxResult.success(order);
             } else {
@@ -134,7 +134,7 @@ public class AliPayController {
             	String timestamp = params.get("timestamp");
             	// 更新订单状态，记录回调信息
             	SurveyOrder order = surveyOrderService.callbackUpdateOrder(outTradeNo, tradeNo, totalAmount, sellerId, timestamp, OrderPayStatus.VERIFICATION_FAILED);
-            	log.debug("回调保存订单信息：" + order);
+            	log.info("回调保存订单信息：" + order);
             	log.info("支付宝回调签名认证失败，signVerified=false, paramsJson:{}", paramsJson);
                 return AjaxResult.error("支付宝回调签名认证失败！", order);
             }

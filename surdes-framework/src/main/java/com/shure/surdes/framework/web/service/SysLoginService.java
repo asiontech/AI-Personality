@@ -1,5 +1,6 @@
 package com.shure.surdes.framework.web.service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -8,7 +9,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -312,9 +312,11 @@ public class SysLoginService {
 			// 关注数量
 			sysUserPlus.setFriendsCount(rawUserInfo.getInteger("friends_count"));
 			sysUserPlus.setFollowersCount(rawUserInfo.getInteger("followers_count")); // 粉丝数量
+			// 插入时间
+			sysUserPlus.setCreateTime(new Date());
 			// 查询头像转成base64编码
-			String readImage = sinaApi.readImage(authUser.getAvatar());
-			sysUserPlus.setAvatarBase64(readImage);
+//			String readImage = sinaApi.readImage(authUser.getAvatar());
+//			sysUserPlus.setAvatarBase64(readImage);
 			// 查询头像转成base64编码
 			String readBigImage = sinaApi.readImage(sysUserPlus.getLargeAvatar());
 			sysUserPlus.setBigAvatarBase64(readBigImage);
@@ -348,12 +350,15 @@ public class SysLoginService {
 			sysUserPlus.setFriendsCount(rawUserInfo.getInteger("friends_count"));
 			sysUserPlus.setFollowersCount(rawUserInfo.getInteger("followers_count")); // 粉丝数量
 			// 查询头像转成base64编码
-			String readImage = sinaApi.readImage(authUser.getAvatar());
-			sysUserPlus.setAvatarBase64(readImage);
+//			String readImage = sinaApi.readImage(authUser.getAvatar());
+//			sysUserPlus.setAvatarBase64(readImage);
 			// 查询头像转成base64编码
 			String readBigImage = sinaApi.readImage(sysUserPlus.getLargeAvatar());
 			sysUserPlus.setBigAvatarBase64(readBigImage);
-			log.debug("readImage" + readImage);
+			
+			sysUserPlus.setUpdateTime(new Date());
+			
+//			log.debug("readImage" + readImage);
 			// 更新用户信息
 			sysUserPlusService.updateById(sysUserPlus);
 			

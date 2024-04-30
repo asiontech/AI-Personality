@@ -156,7 +156,7 @@ public class AliPayService {
 			// extendParams.put("sys_service_provider_id", "2088511833207846");
 			// bizContent.put("extend_params", extendParams);
 
-			log.debug("支付请求参数：" + bizContent.toString());
+			log.info("支付请求参数：" + bizContent.toString());
 			request.setBizContent(bizContent.toString());
 //        	AlipayTradeWapPayResponse response = alipayClient.pageExecute(request, "POST");
 			// 如果需要返回GET请求，请使用

@@ -26,6 +26,8 @@ import com.shure.surdes.survey.service.IAnswerJsonService;
 import com.shure.surdes.survey.service.ISurveyOrderService;
 import com.shure.surdes.survey.service.IUserSurveyResultService;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * 订单业务层实现类
  * 
@@ -33,6 +35,7 @@ import com.shure.surdes.survey.service.IUserSurveyResultService;
  *
  */
 @Service
+@Slf4j
 public class SurveyOderServiceImpl extends ServiceImpl<SurveyOderMapper, SurveyOrder> implements ISurveyOrderService {
 
 	@Resource
@@ -52,10 +55,19 @@ public class SurveyOderServiceImpl extends ServiceImpl<SurveyOderMapper, SurveyO
 
 	@Override
 	public JSONObject submitOrder(SurveyOrder so) {
+		log.info("提交订单，订单信息：" + so);
 		Long anId = so.getAnId();
+		Long surveyId = so.getSurveyId();
+//		if (null != surveyId && 4L == surveyId) {
+//			log.info("提交订单，订单信息surveyId：" + surveyId);
+//			so.setSurveyId(1000L);
+//		}
+		if (null == surveyId) {
+			log.error("参数错误，没有问卷id！");
+			throw new ServiceException("参数错误，没有问卷id！");
+		}
 		if (null == anId) {
 			// 查询最新的结果
-			log.debug("提交订单，订单信息：" + so);
 			AnswerJson answer = new AnswerJson();
 			answer.setUserId(so.getUserId().toString());
 			answer.setSurveyId(so.getSurveyId());
@@ -74,8 +86,8 @@ public class SurveyOderServiceImpl extends ServiceImpl<SurveyOderMapper, SurveyO
 		}
 		// 按照业务查询订单信息
 		AliPayDTO dto = new AliPayDTO();
-		// 订单编号
-		dto.setOutTradeNo(so.getOrderId().toString());
+		// 订单编号用户id加上生成的订单编号
+		dto.setOutTradeNo(so.getOrderId().toString()); 
 		// 支付金额,单位为元
 		dto.setTotalAmount(so.getAmount().toString());
 		// 订单标题，不可使用特殊符号
@@ -91,7 +103,7 @@ public class SurveyOderServiceImpl extends ServiceImpl<SurveyOderMapper, SurveyO
 	@Override
 	public SurveyOrder callbackUpdateOrder(String outTradeNo, String tradeNo, String payAmount, 
 			String sellerId, String timestamp, Integer status) {
-		log.debug("回调接口outTradeNo：" + outTradeNo);
+		log.info("回调接口outTradeNo：" + outTradeNo);
 		// 查询订单信息
 		SurveyOrder surveyOrder = this.getById(Long.valueOf(outTradeNo)); // 商户订单号
 		surveyOrder.setTradeNo(tradeNo); // 交易流水号
