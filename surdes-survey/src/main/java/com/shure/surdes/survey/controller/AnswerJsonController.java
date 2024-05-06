@@ -65,8 +65,16 @@ public class AnswerJsonController extends BaseController {
     
     @ApiOperation(value = "查询用户的disc状态")
     @GetMapping("/disc")
-    public AjaxResult getUserDisc(Long userId) {
-    	return AjaxResult.success(answerJsonService.getUserDisc(userId));
+    public AjaxResult getUserDisc(String userId) {
+    	try {
+    		Long id = Long.valueOf(userId);
+    		return AjaxResult.success(answerJsonService.getUserDisc(id));
+    	} catch (Exception e) {
+        	JSONObject json = new JSONObject();
+    		json.put("payStatus", "");
+    		json.put("testStaus", "");
+			return AjaxResult.success(json);
+		}
     }
     
     @ApiOperation(value = "查询性格匹配用户")

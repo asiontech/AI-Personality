@@ -53,6 +53,7 @@ public class WeiboLogin {
 				.clientId(clientId)
 				.clientSecret(clientSecret)
 				.redirectUri(redirectUri)
+				.ignoreCheckState(true)
 				.build());
 		String uuid = AuthStateUtils.createState();
 		String authorizeUrl = authRequest.authorize(uuid);

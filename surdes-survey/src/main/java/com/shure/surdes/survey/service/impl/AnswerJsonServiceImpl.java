@@ -461,6 +461,7 @@ public class AnswerJsonServiceImpl implements IAnswerJsonService {
     		if (StringUtils.isNotEmpty(orderList)) { // 有已支付订单
     			json.put("payStatus", "pay");
     		} 
+    		
     	}
     	return json;
     }
@@ -701,30 +702,20 @@ public class AnswerJsonServiceImpl implements IAnswerJsonService {
 		            return o2.getValue().compareTo(o1.getValue());
 		        }
 		    });
-			// 性格编码
-			List<String> strs = new ArrayList<>();
-			int index = 0;
-			for (Map.Entry<String, Integer> entry : numList) {
-				if (index > 3 ) {
-					break;
-				}
-				String key = entry.getKey();
-				strs.add(key);
-				index++;
-			}
 			// 按顺序封装
 			List<String> resultStrs = new ArrayList<>();
+			log.info("新增结果：排序numList:+" + numList);
 			for (String cha : character) {
-				log.info("新增结果：字符串str:+" + strs);
-				for (String str : strs) {
-					if (StringUtils.isNotEmpty(str)) {
-						if (cha.contains(str)) {
-							resultStrs.add(str);
-							break;
-						}
+				for (Map.Entry<String, Integer> entry : numList) {
+					String key = entry.getKey();
+					if (cha.contains(key)) { // 拿第一个字符
+						log.info("新增结果：取值第一个:+" + key);
+						resultStrs.add(key);
+						break;
 					}
 				}
 			}
+			log.info("新增结果：得出的结果字符串strs:+" + resultStrs);
 			String join = String.join("", resultStrs);
 			answerJson.setAnswerResult(join);
 			String join2 = String.join("", types);

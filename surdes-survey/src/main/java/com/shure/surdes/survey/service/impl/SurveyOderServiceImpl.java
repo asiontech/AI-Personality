@@ -76,7 +76,7 @@ public class SurveyOderServiceImpl extends ServiceImpl<SurveyOderMapper, SurveyO
 				AnswerJson answerJson = list.get(0);
 				so.setAnId(answerJson.getAnId());
 			} else {
-				throw new ServiceException("没有AI测试结果，请选择极速AI测试完成之后再重新提交订单！");
+				throw new ServiceException("没有测试结果，请选重新测试完成之后再重新提交！");
 			}
 		}
 		so.setCreateTime(new Date());
@@ -118,17 +118,21 @@ public class SurveyOderServiceImpl extends ServiceImpl<SurveyOderMapper, SurveyO
 		Long anId = surveyOrder.getAnId();
 		AnswerJson answer = answerJsonService.selectAnswerJsonByAnId(anId);
 		
-		UserSurveyResult result = new UserSurveyResult();
-		result.setUserId(Long.valueOf(answer.getUserId()));
+		Long surveyId = answer.getSurveyId();
+		if (null != surveyId && 1000L == surveyId) { //AI测试
+			UserSurveyResult result = new UserSurveyResult();
+			result.setUserId(Long.valueOf(answer.getUserId()));
 //		result.setSurveyId(surveyId);
-		result.setAnswerResult(answer.getAnswerResult());
-		result.setSurveyType(SurveyType.MBTI_AI_SURVEY_TEST); //ai测试
-		result.setAnswerResultOrigin(answer.getAnswerResultOrigin());
-		result.setCreateTime(new Date());
-		userSurveyResultService.saveOrUpdate(result);
-		if (!flag) {
-			throw new ServiceException("更新订单信息失败！");
-		}
+			result.setAnswerResult(answer.getAnswerResult());
+			result.setSurveyType(SurveyType.MBTI_AI_SURVEY_TEST); //ai测试
+			result.setAnswerResultOrigin(answer.getAnswerResultOrigin());
+			result.setCreateTime(new Date());
+			userSurveyResultService.saveOrUpdate(result);
+			if (!flag) {
+				throw new ServiceException("更新订单信息失败！");
+			}
+		} 
+		
 		return surveyOrder;
 	}
 

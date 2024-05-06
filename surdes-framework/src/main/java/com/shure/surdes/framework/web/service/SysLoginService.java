@@ -267,8 +267,12 @@ public class SysLoginService {
 		}
 		// 先到数据库查询这个人曾经有没有登录过，没有就注册
 		// 创建授权request
-		AuthRequest authRequest = new AuthWeiboRequest(
-				AuthConfig.builder().clientId(clientId).clientSecret(clientSecret).redirectUri(redirectUri).build());
+		AuthRequest authRequest = new AuthWeiboRequest(AuthConfig.builder()
+													   .clientId(clientId)
+													   .clientSecret(clientSecret)
+													   .redirectUri(redirectUri)
+													   .ignoreCheckState(true) // 忽略校验code
+													   .build());
 		AuthResponse<AuthUser> login = authRequest.login(AuthCallback.builder().state(uuid).code(code).build());
 		log.debug("login:" + JSONObject.toJSONString(login));
 		if (login == null) {
