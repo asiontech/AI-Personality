@@ -76,9 +76,9 @@ public class AliPayController {
 //        dto.setTotalAmount("0.01");
 //        //订单标题，不可使用特殊符号
 //        dto.setSubject("订单标题");
-        // 请求阿里云支付
+        // 请求阿里云支付 FAST_INSTANT_TRADE_PAY
 //        String pay = aliPayService.certificatePayment(dto,"FAST_INSTANT_TRADE_PAY");
-        String pay = aliPayService.keyPayment(dto, "FAST_INSTANT_TRADE_PAY");
+        String pay = aliPayService.keyWebPayment(dto, "FAST_INSTANT_TRADE_PAY");
         return AjaxResult.success("", pay);
     }
 

@@ -93,7 +93,15 @@ public class SurveyOderServiceImpl extends ServiceImpl<SurveyOderMapper, SurveyO
 		// 订单标题，不可使用特殊符号
 		dto.setSubject(so.getSurveyName());
 		// 调用支付宝支付接口，返回支付链接
-		String payLink = aliPayService.keyPayment(dto, "QUICK_WAP_WAY");
+		String productCode = "QUICK_WAP_WAY";
+		String paySource = so.getPaySource();
+		String payLink = "";
+		if (StringUtils.isNotEmpty(paySource) && "pc".equals(paySource)) {
+			productCode = "FAST_INSTANT_TRADE_PAY";
+			payLink = aliPayService.keyWebPayment(dto, productCode);
+		} else {
+			payLink = aliPayService.keyPayment(dto, productCode);
+		}
 		JSONObject json = new JSONObject();
 		json.put("pay", payLink);
 		json.put("order", so);

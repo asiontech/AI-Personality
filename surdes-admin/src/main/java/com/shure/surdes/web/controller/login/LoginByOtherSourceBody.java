@@ -10,6 +10,9 @@ public class LoginByOtherSourceBody {
     private String source;
 
     private String uuid;
+    
+    /** 结果id */
+    private Long anId;
 
   
 }

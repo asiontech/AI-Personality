@@ -17,7 +17,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 
-import com.alibaba.druid.util.StringUtils;
 import com.alibaba.fastjson.JSONObject;
 import com.shure.surdes.common.constant.Constants;
 import com.shure.surdes.common.core.domain.entity.SysUser;
@@ -31,11 +30,14 @@ import com.shure.surdes.common.utils.DateUtils;
 import com.shure.surdes.common.utils.MessageUtils;
 import com.shure.surdes.common.utils.SecurityUtils;
 import com.shure.surdes.common.utils.ServletUtils;
+import com.shure.surdes.common.utils.StringUtils;
 import com.shure.surdes.common.utils.ip.IpUtils;
 import com.shure.surdes.framework.manager.AsyncManager;
 import com.shure.surdes.framework.manager.factory.AsyncFactory;
+import com.shure.surdes.survey.domain.AnswerJson;
 import com.shure.surdes.survey.domain.SysUserPlus;
 import com.shure.surdes.survey.remote.SinaApi;
+import com.shure.surdes.survey.service.IAnswerJsonService;
 import com.shure.surdes.survey.service.ISysUserPlusService;
 import com.shure.surdes.system.service.ISysConfigService;
 import com.shure.surdes.system.service.ISysUserService;
@@ -78,6 +80,9 @@ public class SysLoginService {
 	ISysUserPlusService sysUserPlusService;
 	
 	UserDetailsServiceImpl UserDetailsServiceImpl;
+	
+	@Autowired
+	IAnswerJsonService answerJsonService;
 	
 	@Autowired
 	SinaApi sinaApi;
@@ -236,7 +241,7 @@ public class SysLoginService {
 		return json;
 	}
 
-	public JSONObject loginByOtherSource(String code, String source, String uuid, HttpServletRequest request) {
+	public JSONObject loginByOtherSource(String code, String source, String uuid, Long anId, HttpServletRequest request) {
 		log.debug("登录接口时间点："+ System.currentTimeMillis());
 		log.debug("登录后uuid： "+ uuid);
 		// 防止重复提交直接缓存获取数据
@@ -246,6 +251,7 @@ public class SysLoginService {
 			Long userId = result.getLong("userId");
 			SysUser sysUser = userService.selectUserById(userId);
 			LoginUser loginUser = tokenService.getLoginUser(token);
+			sysUser.getUserId();
 			if (null == loginUser) {
 				// 注册成功或者是已经存在的用户
 				loginUser = new LoginUser(sysUser.getUserId(), sysUser.getDeptId(), sysUser,
@@ -259,6 +265,14 @@ public class SysLoginService {
 				recordLoginInfo(loginUser.getUserId());
 			} else {
 				tokenService.verifyToken(loginUser);
+			}
+			if (null != anId) {
+				AnswerJson answerJson = answerJsonService.selectAnswerJsonByAnId(anId);
+				answerJson.setUserId(userId.toString());
+				int row = answerJsonService.updateAnswerJson(answerJson);
+				if (row < 1) {
+					log.info("更新用户userId：{}问卷结果失败");
+				}
 			}
 			return result;
 		}
@@ -366,6 +380,15 @@ public class SysLoginService {
 			// 更新用户信息
 			sysUserPlusService.updateById(sysUserPlus);
 			
+		}
+		
+		if (null != anId) {
+			AnswerJson answerJson = answerJsonService.selectAnswerJsonByAnId(anId);
+			answerJson.setUserId(sysUserPlus.getUserId().toString());
+			int row = answerJsonService.updateAnswerJson(answerJson);
+			if (row < 1) {
+				log.info("更新用户userId：{}问卷结果失败");
+			}
 		}
 		
 		log.debug("sysUser:" + JSONObject.toJSONString(sysUser));

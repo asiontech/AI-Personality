@@ -69,7 +69,9 @@ public class WeiboLogin {
 		AjaxResult ajax = AjaxResult.success();
 		JSONObject json = loginService.loginByOtherSource(loginByOtherSourceBody.getCode(),
 													   loginByOtherSourceBody.getSource(), 
-													   loginByOtherSourceBody.getUuid(), request);
+													   loginByOtherSourceBody.getUuid(), 
+													   loginByOtherSourceBody.getAnId(), 
+													   request);
 		ajax.put("token", json.getString("token"));
 		ajax.put("sinaToken", json.getString("sinaToken"));
 		ajax.put("userId", json.getString("userId"));

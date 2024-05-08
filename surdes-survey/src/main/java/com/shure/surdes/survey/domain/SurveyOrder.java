@@ -62,4 +62,8 @@ public class SurveyOrder {
 	
 	/** 关联结果 */
 	private Long anId;
+	
+	/** 支付来源手机还是网页mobile/pc */
+	@TableField(exist = false)
+	private String paySource;
 }
