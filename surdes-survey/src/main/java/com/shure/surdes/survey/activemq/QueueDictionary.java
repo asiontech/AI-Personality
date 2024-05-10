@@ -9,4 +9,5 @@ public class QueueDictionary {
 
 	/** ai测试队列名称 */
 	public final static String AI_TEST = "ai_test";
+	
 }

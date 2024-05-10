@@ -63,6 +63,17 @@ public class AnswerJsonController extends BaseController {
     	return AjaxResult.success(answerJsonService.selectAnswerJsonLatest(answerJson));
     }
     
+    /**
+     * 查询mbti的详细解说以及性格相同，匹配的人
+     * @param mbti
+     * @return
+     */
+    @ApiOperation(value = "查询mbti解析数据，以及性格相同，匹配的人")
+    @GetMapping("/mbti/desc")
+    public AjaxResult getMbtiDesc(String mbti, String userId) {
+    	return AjaxResult.success(answerJsonService.getMbtiDesc(mbti, userId));
+    }
+    
     @ApiOperation(value = "查询用户的disc状态")
     @GetMapping("/disc")
     public AjaxResult getUserDisc(String userId) {
@@ -140,6 +151,13 @@ public class AnswerJsonController extends BaseController {
     @PostMapping("/ai")
     public AjaxResult aiTest(@RequestBody AiTestVo vo) {
 		return AjaxResult.success(answerJsonService.aiTest(vo));
+    }
+    
+    @ApiOperation(value = "用户AI测试，选择时间段")
+    @Log(title = "用户AI测试，选择时间段", businessType = BusinessType.INSERT)
+    @PostMapping("/aitime")
+    public AjaxResult aiTestByTime(@RequestBody AiTestVo vo) {
+    	return AjaxResult.success(answerJsonService.aiTestByTime(vo));
     }
 
     /**

@@ -35,6 +35,13 @@ public interface AnswerJsonMapper {
      * @return
      */
     public List<AnswerJson> selectAnswerJsonLatest(AnswerJson answerJson);
+    
+    /**
+     * 查询用户的所有答题结果，按照开始时间、结束时间排序
+     * @param answerJson
+     * @return
+     */
+    public List<AnswerJson> selectAnswerJsonAll(AnswerJson answerJson);
 
     /**
      * 新增问卷答案结果json

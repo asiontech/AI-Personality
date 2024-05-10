@@ -3,8 +3,11 @@ package com.shure.surdes.common.utils;
 import java.lang.management.ManagementFactory;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.Date;
+
 import org.apache.commons.lang3.time.DateFormatUtils;
+import org.springframework.format.datetime.joda.LocalDateParser;
 
 /**
  * 时间工具类
@@ -151,5 +154,21 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils
         // 计算差多少秒//输出结果
         // long sec = diff % nd % nh % nm / ns;
         return day + "天" + hour + "小时" + min + "分钟";
+    }
+    
+    /**
+     * 查询两个日期之间的月份，按30天算，超过30天为2个月
+     * @param startTime
+     * @param endTime
+     * @return
+     */
+    public static Integer getMonthNumBetweenTime(Date startTime, Date endTime) {
+    	long nd = 1000 * 24 * 60 * 60;
+    	long t1 = startTime.getTime();
+    	long t2 = endTime.getTime();
+    	long diff = t2 - t1;
+    	int day = (int) (diff / nd);
+    	int month = (int) Math.ceil((double)day / 30); // 向上取整
+    	return month;
     }
 }

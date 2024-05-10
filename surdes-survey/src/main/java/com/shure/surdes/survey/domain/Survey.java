@@ -46,6 +46,7 @@ public class Survey extends BaseEntity {
      */
     @Excel(name = "问卷状态", readConverterExp = "0=：未发布，1：收集中，2：已结束")
     private String surveyStatus;
+    
 
     public String getSurveyTypeChar() {
 		return surveyTypeChar;
@@ -66,8 +67,41 @@ public class Survey extends BaseEntity {
     
     /** 支付状态pay */
     private String payStatus;
+    
+    /** 是否免费0免费1收费 */
+    private Integer freeFlag;
+    
+    /** 原价 */
+    private Double originPrice;
+    
+    /** 特惠价格 */
+    private Double discountPrice;
 
-    public String getPayStatus() {
+    public Integer getFreeFlag() {
+		return freeFlag;
+	}
+
+	public void setFreeFlag(Integer freeFlag) {
+		this.freeFlag = freeFlag;
+	}
+
+	public Double getOriginPrice() {
+		return originPrice;
+	}
+
+	public void setOriginPrice(Double originPrice) {
+		this.originPrice = originPrice;
+	}
+
+	public Double getDiscountPrice() {
+		return discountPrice;
+	}
+
+	public void setDiscountPrice(Double discountPrice) {
+		this.discountPrice = discountPrice;
+	}
+
+	public String getPayStatus() {
 		return payStatus;
 	}
 

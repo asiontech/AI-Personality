@@ -1,5 +1,6 @@
 package com.shure.surdes.survey.service.impl;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -12,10 +13,13 @@ import org.springframework.stereotype.Service;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.shure.surdes.common.exception.ServiceException;
+import com.shure.surdes.common.utils.DateUtils;
 import com.shure.surdes.common.utils.StringUtils;
+import com.shure.surdes.survey.constant.OrderPayStatus;
 import com.shure.surdes.survey.constant.PayType;
 import com.shure.surdes.survey.constant.SurveyType;
 import com.shure.surdes.survey.domain.AnswerJson;
+import com.shure.surdes.survey.domain.Survey;
 import com.shure.surdes.survey.domain.SurveyOrder;
 import com.shure.surdes.survey.domain.UserSurveyResult;
 import com.shure.surdes.survey.mapper.AnswerJsonMapper;
@@ -24,6 +28,7 @@ import com.shure.surdes.survey.pay.zfb.AliPayDTO;
 import com.shure.surdes.survey.pay.zfb.AliPayService;
 import com.shure.surdes.survey.service.IAnswerJsonService;
 import com.shure.surdes.survey.service.ISurveyOrderService;
+import com.shure.surdes.survey.service.ISurveyService;
 import com.shure.surdes.survey.service.IUserSurveyResultService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -50,6 +55,9 @@ public class SurveyOderServiceImpl extends ServiceImpl<SurveyOderMapper, SurveyO
 	@Autowired
 	AnswerJsonMapper answerJsonMapper;
 	
+	@Autowired
+	ISurveyService surveyService;
+	
 	@Value("${surdes.price}")
 	private String price;
 
@@ -66,6 +74,27 @@ public class SurveyOderServiceImpl extends ServiceImpl<SurveyOderMapper, SurveyO
 			log.error("参数错误，没有问卷id！");
 			throw new ServiceException("参数错误，没有问卷id！");
 		}
+		// 查询问卷信息
+		Survey survey = surveyService.selectSurveyBySurveyId(surveyId);
+		if (survey == null) {
+			throw new ServiceException("没有找到对应的问卷！");
+		}
+		// 优惠价格
+		Double discountPrice = survey.getDiscountPrice();
+		Integer freeFlag = survey.getFreeFlag();
+		if (0 == freeFlag) {
+			throw new ServiceException("免费问卷，无需支付！");
+		}
+		if (1001L == surveyId && null != anId) { // ai测试时间段
+			AnswerJson answer = answerJsonMapper.selectAnswerJsonByAnId(anId);
+			Date startTime = answer.getStartTime();
+			Date endTime = answer.getEndTime();
+			// 计算有几个月
+			Integer monthNum = DateUtils.getMonthNumBetweenTime(startTime, endTime);
+			BigDecimal b1 = new BigDecimal(discountPrice);
+			BigDecimal b2 = new BigDecimal(monthNum);
+			discountPrice = b1.multiply(b2).doubleValue(); // 计算总价
+		}
 		if (null == anId) {
 			// 查询最新的结果
 			AnswerJson answer = new AnswerJson();
@@ -76,7 +105,7 @@ public class SurveyOderServiceImpl extends ServiceImpl<SurveyOderMapper, SurveyO
 				AnswerJson answerJson = list.get(0);
 				so.setAnId(answerJson.getAnId());
 			} else {
-				throw new ServiceException("没有测试结果，请选重新测试完成之后再重新提交！");
+				throw new ServiceException("没有测试结果，请重新测试完成之后再重新提交！");
 			}
 		}
 		so.setCreateTime(new Date());
@@ -89,7 +118,7 @@ public class SurveyOderServiceImpl extends ServiceImpl<SurveyOderMapper, SurveyO
 		// 订单编号用户id加上生成的订单编号
 		dto.setOutTradeNo(so.getOrderId().toString()); 
 		// 支付金额,单位为元
-		dto.setTotalAmount(so.getAmount().toString());
+		dto.setTotalAmount(discountPrice.toString());
 		// 订单标题，不可使用特殊符号
 		dto.setSubject(so.getSurveyName());
 		// 调用支付宝支付接口，返回支付链接
@@ -117,7 +146,7 @@ public class SurveyOderServiceImpl extends ServiceImpl<SurveyOderMapper, SurveyO
 		surveyOrder.setTradeNo(tradeNo); // 交易流水号
 		surveyOrder.setSellerId(sellerId); // 交易收款人用户id
 		surveyOrder.setBackTimestamp(timestamp); // 前端回调时间
-		surveyOrder.setStatus(1); // 设置订单状态已付款
+		surveyOrder.setStatus(OrderPayStatus.HAVE_PAY); // 设置订单状态已付款
 		surveyOrder.setPayTime(new Date()); // 订单完成时间
 		surveyOrder.setPayAmount(payAmount); // 实际付款金额
 		surveyOrder.setPayType(PayType.ALI_PAY); // 支付方式

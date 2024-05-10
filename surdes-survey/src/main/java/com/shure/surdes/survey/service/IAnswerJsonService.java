@@ -37,6 +37,13 @@ public interface IAnswerJsonService {
     public JSONObject selectAnswerJsonLatest(AnswerJson answerJson);
     
     /**
+     * 查询mbti解析
+     * @param mbti
+     * @return
+     */
+    public JSONObject getMbtiDesc(String mbti, String userId);
+    
+    /**
      * 查询用户的disc状态数据
      * @param userId
      * @return
@@ -82,6 +89,13 @@ public interface IAnswerJsonService {
      * @param vo
      */
     public JSONObject aiTest(AiTestVo vo);
+    
+    /**
+     * ai测试，选择时间段
+     * @param vo
+     * @return
+     */
+    public JSONObject aiTestByTime(AiTestVo vo);
 
     /**
      * 修改问卷答案结果json

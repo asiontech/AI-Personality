@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.shure.surdes.common.core.redis.RedisCache;
+import com.shure.surdes.common.utils.DateUtils;
 import com.shure.surdes.common.utils.StringUtils;
 import com.shure.surdes.survey.constant.SurveyType;
 import com.shure.surdes.survey.domain.AnswerJson;
@@ -41,11 +42,19 @@ public class TopicListner {
 		AiTestVo vo = JSON.parseObject(message, AiTestVo.class);
 		Long userId = vo.getUserId();
 		Long surveyId = vo.getSurveyId();
+		String startTime = vo.getStartTime();
+		String endTime = vo.getEndTime();
 		String aid = vo.getAid();
 	  	Integer retest = vo.getRetest(); // 强制更新字段
 	  	String update = null;
     	if (null != retest && 1 == retest) {
     		update = "true";
+    	}
+    	String surveyType = SurveyType.MBTI_AI_SURVEY_TEST;
+    	boolean timeFlag = false;
+    	if (StringUtils.isNotEmpty(startTime) && StringUtils.isNotEmpty(endTime)) {
+    		surveyType = SurveyType.MBTI_AI_TIME_SURVEY_TEST;
+    		timeFlag = true;
     	}
 		// 业务处理
     	// 调用接口得出mbti
@@ -80,7 +89,15 @@ public class TopicListner {
     			answer.setCreateTime(new Date());
     			answer.setAnswerResult(mbti);
     			answer.setAnswerResultOrigin(score.toJSONString());
-    			answer.setSurveyType(SurveyType.MBTI_AI_SURVEY_TEST);
+    			answer.setSurveyType(surveyType);
+    			if (timeFlag) { // ai时间段测试
+    				try {
+    					answer.setStartTime(DateUtils.parseDate(startTime, DateUtils.YYYY_MM_DD));
+    					answer.setEndTime(DateUtils.parseDate(endTime, DateUtils.YYYY_MM_DD));
+    				} catch (Exception e) {
+    					log.error("日期转换失败，格式不符！startTime:{},endTime:{}", startTime, endTime);
+    				}
+    			}
     			answerJsonMapper.insertAnswerJson(answer);
     			redisJson.fluentPut("code", 200);
     			redisJson.fluentPut("data", answer.getAnId());

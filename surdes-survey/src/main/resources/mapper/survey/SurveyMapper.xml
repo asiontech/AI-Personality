@@ -15,6 +15,9 @@
         <result property="userId" column="user_id"/>
         <result property="status" column="status"/>
         <result property="bookCode" column="book_code"/>
+        <result property="originPrice" column="origin_price"/>
+        <result property="discountPrice" column="discount_price"/>
+        <result property="freeFlag" column="free_flag"/>
     </resultMap>
 
     <sql id="selectSurveyVo">
@@ -27,7 +30,10 @@
                create_time,
                user_id,
                status,
-               book_code
+               book_code,
+               origin_price,
+               discount_price,
+               free_flag
         from tb_survey
     </sql>
 

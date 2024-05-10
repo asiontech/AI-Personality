@@ -132,24 +132,60 @@ public class AnswerJsonServiceImpl implements IAnswerJsonService {
         return answerJsonMapper.selectAnswerJsonList(answerJson);
     }
     
+    @Override
+    public JSONObject getMbtiDesc(String mbti, String userId) {
+    	JSONObject json = new JSONObject();
+    	LambdaQueryWrapper<MbtiTypeDesc> wrapper = new LambdaQueryWrapper<MbtiTypeDesc>();
+		wrapper.eq(MbtiTypeDesc::getCharaCode, mbti);
+		MbtiTypeDesc mbtiTypeDesc = mbtiTypeDescMapper.selectOne(wrapper);
+		String match = mbtiTypeDesc.getMatchMbti();
+		// 查询性格匹配的人员
+		if (StringUtils.isNotEmpty(match)) {
+			String[] split = match.split(",");
+			List<SysUserPlus> matchPeople = getMatchPeople(Arrays.asList(split));
+			json.put("matchPeople", matchPeople);
+			// 查询匹配性格
+			String pmatch = "";
+			for (String pm : split) {
+    			LambdaQueryWrapper<MbtiTypeDesc> pwrapper = new LambdaQueryWrapper<MbtiTypeDesc>();
+    			pwrapper.eq(MbtiTypeDesc::getCharaCode, pm);
+    			try {
+    				MbtiTypeDesc pmbtidesc = mbtiTypeDescMapper.selectOne(pwrapper);
+    				String pcharaName = pmbtidesc.getCharaName();
+    				pmatch += pm + "（" + pcharaName + "），";
+    			} catch (Exception e) {
+					log.error("匹配性格人员查询失败:"+ e.getMessage() );
+				}
+			}
+			pmatch = pmatch.substring(0, pmatch.length() - 1);
+			mbtiTypeDesc.setMatchMbti(pmatch);
+		}
+		json.put("mbtiTypeDesc", mbtiTypeDesc);
+		// 查询性格相同的人员
+		try {
+			List<SysUserPlus> samePeople = getSamePeople(mbti, userId);
+			json.put("samePeople", samePeople);
+		} catch (Exception e) {
+			log.error("相同性格人员查询失败:"+ e.getMessage() );
+		}
+    	return json;
+    }
+    
     /**
      * 查询用户最新的答案结果
      */
     @Override
     public JSONObject selectAnswerJsonLatest(AnswerJson answerJson) {
-    	try {
-    		Long userId = SecurityUtils.getUserId();
-    		log.debug("查询用户最新答案结果，业务层当前登录用户id为：" + userId);
-//    		answerJson.setUserId(userId);
-     	} catch (Exception e) {
-//			return AjaxResult.error("获取用户id失败，请重新登录！");
-		}
     	JSONObject json = new JSONObject();
     	String userId = answerJson.getUserId();
     	Long surveyId = answerJson.getSurveyId();
     	// 查询的问卷类型
     	String stype = answerJson.getSurveyType();
     	log.info("查询用户最新答案传过来的用户id:{},surveyId:{},stype:{}",userId,surveyId,stype);
+    	if (SurveyType.MBTI_AI_TIME_SURVEY_TEST.equals(stype)) { // ai测试时间段
+    		json = getAiTestByTimeResult(answerJson);
+    		return json;
+    	}
     	List<AnswerJson> list = answerJsonMapper.selectAnswerJsonLatest(answerJson);
     	AnswerJson result = null;
     	if (SurveyType.MBTI_AI_SURVEY_TEST.equals(stype)) { // ai测试结果
@@ -162,7 +198,7 @@ public class AnswerJsonServiceImpl implements IAnswerJsonService {
     		LambdaQueryWrapper<SurveyOrder> sowrapper = new LambdaQueryWrapper<SurveyOrder>();
     		sowrapper.eq(SurveyOrder::getUserId, userId);
     		sowrapper.eq(SurveyOrder::getSurveyId, surveyId);
-    		sowrapper.eq(SurveyOrder::getStatus, 1);
+    		sowrapper.eq(SurveyOrder::getStatus, OrderPayStatus.HAVE_PAY);
     		sowrapper.orderByDesc(SurveyOrder::getOrderTimestamp);
     		// 查询订单信息
     		List<SurveyOrder> orderList = surveyOrderService.list(sowrapper);
@@ -186,7 +222,7 @@ public class AnswerJsonServiceImpl implements IAnswerJsonService {
     		LambdaQueryWrapper<SurveyOrder> sowrapper = new LambdaQueryWrapper<SurveyOrder>();
     		sowrapper.eq(SurveyOrder::getUserId, userId);
     		sowrapper.eq(SurveyOrder::getSurveyId, surveyId);
-    		sowrapper.eq(SurveyOrder::getStatus, 1);
+    		sowrapper.eq(SurveyOrder::getStatus, OrderPayStatus.HAVE_PAY);
     		sowrapper.orderByDesc(SurveyOrder::getOrderTimestamp);
     		// 查询订单信息
     		List<SurveyOrder> orderList = surveyOrderService.list(sowrapper);
@@ -216,7 +252,7 @@ public class AnswerJsonServiceImpl implements IAnswerJsonService {
     		List<String> characters = MBTI16Type.CHARACTER_8_TYPE;
     		List<String> character4Type = MBTI16Type.CHARACTER_4_TYPE;
     		if (SurveyType.MBTI_AI_SURVEY_TEST.equals(surveyType)) { // ai测试结果
-    			log.debug("查询ai测试结果,开始封装得分数据 : " + origin);
+    			log.info("查询ai测试结果,开始封装得分数据 : " + origin);
     			JSONObject aiJson = JSONObject.parseObject(origin);
     			for (String chara2 : character4Type) {
     				String[] split = chara2.split("");
@@ -287,11 +323,6 @@ public class AnswerJsonServiceImpl implements IAnswerJsonService {
     					radar.add(map);
     				}
     			}
-//    			result.setAnswerJson(null); // 省流量
-//    			json.put("radar", radar);
-//    			json.put("answerJson", result);
-//    			json.put("code", 200);
-//    			return json;
     		} else if (SurveyType.DISC_40_QUESTION_SURVEY.equals(surveyType)) {
     			List<String> discs = MBTI16Type.DISC_4_TYPE;
     			JSONArray discScore = new JSONArray();
@@ -368,6 +399,100 @@ public class AnswerJsonServiceImpl implements IAnswerJsonService {
     	return json;
     }
     
+    /**
+     * 查询ai测试时间段结果
+     * @param answerJson
+     * @return
+     */
+    private JSONObject getAiTestByTimeResult(AnswerJson answerJson) {
+       	try {
+    		Long userId = SecurityUtils.getUserId();
+    		log.debug("查询用户最新答案结果，业务层当前登录用户id为：" + userId);
+     	} catch (Exception e) {
+//			return AjaxResult.error("获取用户id失败，请重新登录！");
+		}
+    	JSONObject json = new JSONObject();
+    	String userId = answerJson.getUserId();
+    	Long surveyId = answerJson.getSurveyId();
+    	// 查询的问卷类型
+    	String stype = answerJson.getSurveyType();
+    	log.info("查询用户最新答案传过来的用户id:{},surveyId:{},stype:{}",userId,surveyId,stype);
+    	List<AnswerJson> list = answerJsonMapper.selectAnswerJsonAll(answerJson);
+    	// 结果列表
+    	List<AnswerJson> resultList = new ArrayList<AnswerJson>();
+    	// 查询用户支付的订单
+    	if (StringUtils.isNotEmpty(list)) {
+    		// 查询用户的订单信息
+    		LambdaQueryWrapper<SurveyOrder> sowrapper = new LambdaQueryWrapper<SurveyOrder>();
+    		sowrapper.eq(SurveyOrder::getUserId, userId);
+    		sowrapper.eq(SurveyOrder::getSurveyId, surveyId);
+    		sowrapper.eq(SurveyOrder::getStatus, OrderPayStatus.HAVE_PAY);
+    		sowrapper.orderByDesc(SurveyOrder::getOrderTimestamp);
+    		// 查询订单信息
+    		List<SurveyOrder> orderList = surveyOrderService.list(sowrapper);
+    		if (StringUtils.isNotEmpty(orderList)) { 
+    			List<Long> anIdList = orderList.stream().map(s -> s.getAnId()).collect(Collectors.toList());
+    			if (StringUtils.isNotEmpty(anIdList)) { // 已支付订单对应的结果id
+    				for (AnswerJson answer : list) {
+    					Long anId = answer.getAnId();
+    					if (anIdList.contains(anId)) { // 已支付
+    						// 用户得分
+        		    		String origin = answer.getAnswerResultOrigin();
+        		    		// 雷达图数据
+        		    		List<Map<String, Object>> radar = new ArrayList<>();
+        		    		List<String> character4Type = MBTI16Type.CHARACTER_4_TYPE;
+        					// 雷达图数据
+        	    			JSONObject aiJson = JSONObject.parseObject(origin);
+        	    			for (String chara2 : character4Type) {
+        	    				String[] split = chara2.split("");
+        						Map<String, Object> map11 = new HashMap<>();
+        						String chara11 = split[0];
+        						Double value11 = aiJson.getDouble(chara11);
+        						Map<String, Object> map22 = new HashMap<>();
+        						String chara22 = split[1];
+        						Double value22 = aiJson.getDouble(chara22);
+        						if (null != value11) {
+        							value22 = 1 - value11;
+        						} else {
+        							value11 = 1 - value22;
+        						}
+        						map11.put("name", chara11);
+        						map11.put("value", (int) (value11 * 100));
+        						radar.add(map11);
+        						map22.put("name", chara22);
+        						map22.put("value", (int) (value22 * 100));
+        						radar.add(map22);
+        	    			}
+        	    			answer.setRadar(radar);
+    						resultList.add(answer);
+    					} else { // 未支付，只返回anId，时间等参数
+//    						answer.setAnswerResult(null);
+//    						answer.setAnswerResultOrigin(null);
+//    						answer.setKeyCloud(null);
+    					}
+    				}
+    			}
+    		} else { // 全都未支付
+//				for (AnswerJson answer : list) {
+//					answer.setAnswerResult(null);
+//					answer.setAnswerResultOrigin(null);
+//					answer.setKeyCloud(null);
+//				}
+        		json.put("code", 500);
+        		json.put("msg", "没有支付记录，请测试完成之后支付！");
+    		}
+    		if (StringUtils.isNotEmpty(resultList)) {
+    			json.put("code", 200);
+    			json.put("answerList", resultList);
+    			json.put("total", resultList.size());
+    			return json;
+    		}
+    	} else {
+    		json.put("code", 500);
+    		json.put("msg", "没有测试记录，请先测试！");
+    	}
+		return json;
+    }
     
     /**
      * 获取性格匹配的人员
@@ -620,6 +745,62 @@ public class AnswerJsonServiceImpl implements IAnswerJsonService {
     	return result;
     }
 
+    @Override
+    public JSONObject aiTestByTime(AiTestVo vo) {
+    	JSONObject result = new JSONObject();
+    	Integer retest = vo.getRetest();
+    	Long userId = vo.getUserId();
+    	if (null == userId) {
+    		log.error("未获取到userId，参数错误！");
+    		throw new ServiceException("未获取到userId，参数错误！");
+    	}
+    	Long surveyId = vo.getSurveyId();
+    	if (null == surveyId) {
+    		surveyId = 1001L;
+    	}
+    	String aid = vo.getAid();
+    	if (StringUtils.isEmpty(aid)) { // 第一次请求
+    		// aid组合
+    		aid = userId + "-" + surveyId + "-" + System.currentTimeMillis();
+    		vo.setAid(aid); // 生成队列唯一标识
+        	// 发送到队列
+        	activeMQUtils.sendMessageToQueue(QueueDictionary.AI_TEST, vo);
+			result.put("code", 201);
+    	} else { // 后续轮询请求
+    		// 查询缓存中是否有anId
+    		JSONObject redisJson = redisCache.getCacheObject(aid);
+    		log.info("轮询查询缓存中的数据为：{}:{}", userId, redisJson);
+    		if (null != redisJson) {
+    			Integer code = redisJson.getInteger("code");
+    			String msg = redisJson.getString("msg");
+    			if (null != code) {
+    				if (code == 200) { // 正确结果
+    					Long anId = redisJson.getLong("data");
+    					result.put("anId", anId);
+    					result.put("code", 200);
+    				} else if (code == 201) { // 还在处理中
+    		        	// 重新发送到队列，重新请求
+    					vo.setRetest(null); // 置空
+    		        	activeMQUtils.sendMessageToQueue(QueueDictionary.AI_TEST, vo);
+    					result.put("code", 201);
+    					result.put("msg", msg);
+    				} else if (code == 500) { // 服务器异常
+    					result.put("code", 500);
+    					result.put("msg", msg);
+    				}
+    			} else {
+    				result.put("code", 201);
+    				result.put("msg", "系统正在生成AI测试结果，请稍等！");
+    			}
+    		} else { // 缓存中没有数据，说明还没有执行到
+    			result.put("code", 201);
+    			result.put("msg", "系统正在生成AI测试结果，请稍等！");
+    		}
+    	}
+    	result.put("params", vo);
+    	return result;
+    }
+    
     /**
      * 新增问卷答案结果json
      *

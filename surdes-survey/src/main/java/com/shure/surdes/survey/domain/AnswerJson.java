@@ -1,9 +1,15 @@
 package com.shure.surdes.survey.domain;
 
-import com.shure.surdes.common.annotation.Excel;
-import com.shure.surdes.common.core.domain.BaseEntity;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.shure.surdes.common.annotation.Excel;
+import com.shure.surdes.common.core.domain.BaseEntity;
 
 /**
  * 问卷答案结果json对象 tb_answer_json
@@ -37,6 +43,9 @@ public class AnswerJson extends BaseEntity {
     @Excel(name = "性格结果原始")
     private String answerResultOrigin;
     
+    /** 词云 */
+    private String keyCloud;
+    
     /**
      * 答题人唯一标识
      */
@@ -60,8 +69,50 @@ public class AnswerJson extends BaseEntity {
     
     /** 订单时间戳 */
     private Long orderTimestamp;
+    
+    /** ai测试时间段开始时间 */
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private Date startTime;
+    
+    /** ai测试时间段结束时间 */
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private Date endTime;
 
-    public Long getOrderTimestamp() {
+    private List<Map<String, Object>> radar;
+    
+	public List<Map<String, Object>> getRadar() {
+		return radar;
+	}
+
+	public void setRadar(List<Map<String, Object>> radar) {
+		this.radar = radar;
+	}
+
+	public String getKeyCloud() {
+		return keyCloud;
+	}
+
+	public void setKeyCloud(String keyCloud) {
+		this.keyCloud = keyCloud;
+	}
+
+	public Date getStartTime() {
+		return startTime;
+	}
+
+	public void setStartTime(Date startTime) {
+		this.startTime = startTime;
+	}
+
+	public Date getEndTime() {
+		return endTime;
+	}
+
+	public void setEndTime(Date endTime) {
+		this.endTime = endTime;
+	}
+
+	public Long getOrderTimestamp() {
 		return orderTimestamp;
 	}
 
