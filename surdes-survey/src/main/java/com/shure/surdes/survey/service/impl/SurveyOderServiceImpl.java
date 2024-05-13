@@ -94,6 +94,7 @@ public class SurveyOderServiceImpl extends ServiceImpl<SurveyOderMapper, SurveyO
 			BigDecimal b1 = new BigDecimal(discountPrice);
 			BigDecimal b2 = new BigDecimal(monthNum);
 			discountPrice = b1.multiply(b2).doubleValue(); // 计算总价
+			so.setAmount(discountPrice); // 设置订单总价格
 		}
 		if (null == anId) {
 			// 查询最新的结果

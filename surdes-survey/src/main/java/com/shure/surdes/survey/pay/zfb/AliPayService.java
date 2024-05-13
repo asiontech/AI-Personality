@@ -160,14 +160,14 @@ public class AliPayService {
 
 			log.info("支付请求参数：" + bizContent.toString());
 			request.setBizContent(bizContent.toString());
-//        	AlipayTradeWapPayResponse response = alipayClient.pageExecute(request, "POST");
+        	AlipayTradeWapPayResponse response = alipayClient.pageExecute(request, "GET");
 			// 如果需要返回GET请求，请使用
-			AlipayTradeWapPayResponse response = null;
-			if ("FAST_INSTANT_TRADE_PAY".equals(productCode)) {
-				response = alipayClient.pageExecute(request, "POST");
-			} else {
-				response = alipayClient.pageExecute(request, "GET");
-			}
+//			AlipayTradeWapPayResponse response = null;
+//			if ("FAST_INSTANT_TRADE_PAY".equals(productCode)) {
+//				response = alipayClient.pageExecute(request, "POST");
+//			} else {
+//				response = alipayClient.pageExecute(request, "GET");
+//			}
 			String pageRedirectionData = response.getBody();
 
 			if (response.isSuccess()) {

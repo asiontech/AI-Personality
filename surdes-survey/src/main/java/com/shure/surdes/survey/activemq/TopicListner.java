@@ -58,7 +58,8 @@ public class TopicListner {
     	}
 		// 业务处理
     	// 调用接口得出mbti
-    	JSONObject json = modelApi.getMbti(vo.getUid(), vo.getUser(), vo.getUserToken(), update);
+    	JSONObject json = modelApi.getMbti(vo.getUid(), vo.getUser(), vo.getUserToken(), 
+    			startTime, endTime, update);
     	log.debug("用户id:{}ai测试结束，返回结果:{}", userId, json);
     	JSONObject redisJson = new JSONObject();
     	if (null != json) {
@@ -81,6 +82,13 @@ public class TopicListner {
     		if (null != code && 200 == code) {
     			JSONObject jsonObject = json.getJSONObject("data");
     			String mbti = jsonObject.getString("type");
+    			if (StringUtils.isEmpty(mbti)) {
+    				redisJson.fluentPut("code", 500);
+    				redisJson.fluentPut("msg", "没有帖文数据，不能得出AI测试结果！");
+    				redisCache.setCacheObject(aid, redisJson, 30, TimeUnit.MINUTES);
+    				log.debug("AI测试队列缓存消息：{}:{}", userId, redisJson.toString());
+    				return;
+    			}
     			JSONObject score = jsonObject.getJSONObject("dim_score");
     			// 计算得分
     			AnswerJson answer = new AnswerJson();
@@ -91,11 +99,21 @@ public class TopicListner {
     			answer.setAnswerResultOrigin(score.toJSONString());
     			answer.setSurveyType(surveyType);
     			if (timeFlag) { // ai时间段测试
-    				try {
-    					answer.setStartTime(DateUtils.parseDate(startTime, DateUtils.YYYY_MM_DD));
-    					answer.setEndTime(DateUtils.parseDate(endTime, DateUtils.YYYY_MM_DD));
-    				} catch (Exception e) {
-    					log.error("日期转换失败，格式不符！startTime:{},endTime:{}", startTime, endTime);
+    				// 查询词云数据
+    				JSONObject cloudJson = modelApi.getKeyCloud(vo.getUid(), startTime, endTime);
+    				log.info("词云数据：{}", cloudJson);
+    				if (null != cloudJson) {
+    					Integer status = cloudJson.getInteger("status");
+    					if (null != status && 200 == status) {
+    						JSONObject keyCloud = cloudJson.getJSONObject("data");
+    						answer.setKeyCloud(keyCloud.toJSONString());
+    					}
+    					try {
+    						answer.setStartTime(DateUtils.parseDate(startTime, DateUtils.YYYY_MM_DD));
+    						answer.setEndTime(DateUtils.parseDate(endTime, DateUtils.YYYY_MM_DD));
+    					} catch (Exception e) {
+    						log.error("日期转换失败，格式不符！startTime:{},endTime:{}", startTime, endTime);
+    					}
     				}
     			}
     			answerJsonMapper.insertAnswerJson(answer);

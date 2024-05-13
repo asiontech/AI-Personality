@@ -10,6 +10,7 @@
         <result property="answerJson" column="answer_json"/>
         <result property="answerResult" column="answer_result"/>
         <result property="answerResultOrigin" column="answer_result_origin"/>
+        <result property="keyCloud" column="key_cloud"/>
         <result property="userId" column="user_id"/>
         <result property="userName" column="user_name"/>
         <result property="createTime" column="create_time"/>
@@ -20,7 +21,7 @@
     </resultMap>
 
     <sql id="selectAnswerJsonVo">
-        select an_id, survey_id, answer_json, answer_result, answer_result_origin, user_id, user_name, create_time, book_code, survey_type, start_time, end_time 
+        select an_id, survey_id, answer_json, answer_result, answer_result_origin, key_cloud, user_id, user_name, create_time, book_code, survey_type, start_time, end_time 
         from tb_answer_json
     </sql>
 
@@ -74,6 +75,7 @@
             <if test="answerJson != null">answer_json,</if>
             <if test="answerResult != null">answer_result,</if>
             <if test="answerResultOrigin != null">answer_result_origin,</if>
+            <if test="keyCloud != null">key_cloud,</if>
             <if test="userId != null">user_id,</if>
             <if test="userName != null">user_name,</if>
             <if test="createTime != null">create_time,</if>
@@ -87,6 +89,7 @@
             <if test="answerJson != null">#{answerJson},</if>
             <if test="answerResult != null">#{answerResult},</if>
             <if test="answerResultOrigin != null">#{answerResultOrigin},</if>
+            <if test="keyCloud != null">#{keyCloud},</if>
             <if test="userId != null">#{userId},</if>
             <if test="userName != null">#{userName},</if>
             <if test="createTime != null">#{createTime},</if>

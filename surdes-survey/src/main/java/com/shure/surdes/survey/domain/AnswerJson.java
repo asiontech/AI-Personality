@@ -7,6 +7,7 @@ import java.util.Map;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
+import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.shure.surdes.common.annotation.Excel;
 import com.shure.surdes.common.core.domain.BaseEntity;
@@ -80,6 +81,17 @@ public class AnswerJson extends BaseEntity {
 
     private List<Map<String, Object>> radar;
     
+    /** 词云封装数据 */
+    private List<JSONObject> keyCloudData;
+    
+	public List<JSONObject> getKeyCloudData() {
+		return keyCloudData;
+	}
+
+	public void setKeyCloudData(List<JSONObject> keyCloudData) {
+		this.keyCloudData = keyCloudData;
+	}
+
 	public List<Map<String, Object>> getRadar() {
 		return radar;
 	}

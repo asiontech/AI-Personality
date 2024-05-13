@@ -6,12 +6,12 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-import org.apache.commons.math3.geometry.partitioning.utilities.OrderedTuple;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -199,7 +199,7 @@ public class AnswerJsonServiceImpl implements IAnswerJsonService {
     		sowrapper.eq(SurveyOrder::getUserId, userId);
     		sowrapper.eq(SurveyOrder::getSurveyId, surveyId);
     		sowrapper.eq(SurveyOrder::getStatus, OrderPayStatus.HAVE_PAY);
-    		sowrapper.orderByDesc(SurveyOrder::getOrderTimestamp);
+    		sowrapper.orderByDesc(SurveyOrder::getCreateTime);
     		// 查询订单信息
     		List<SurveyOrder> orderList = surveyOrderService.list(sowrapper);
     		if (StringUtils.isEmpty(orderList)) {
@@ -438,6 +438,38 @@ public class AnswerJsonServiceImpl implements IAnswerJsonService {
     					if (anIdList.contains(anId)) { // 已支付
     						// 用户得分
         		    		String origin = answer.getAnswerResultOrigin();
+        		    		String keyCloud = answer.getKeyCloud();
+        		    		// 词云数据封装
+        		    		if (StringUtils.isNotEmpty(keyCloud)) {
+    							JSONObject keyCloudJson = JSONObject.parseObject(keyCloud);
+    							// 封装成list
+    							List<JSONObject> keyValueList = new ArrayList<JSONObject>();
+    							Iterator<Entry<String, Object>> iterator = keyCloudJson.entrySet().iterator();
+    							while (iterator.hasNext()) {
+    								Entry<String, Object> next = iterator.next();
+    								String key = next.getKey();
+    								Integer value = (Integer) next.getValue();
+    								JSONObject map = new JSONObject();
+    								map.put("name", key);
+    								map.put("value", value);
+    								keyValueList.add(map);
+    							}
+    							if (StringUtils.isNotEmpty(keyValueList)) {
+    								// 排序
+    								Collections.sort(keyValueList, new Comparator<JSONObject>() {
+
+    									@Override
+    									public int compare(JSONObject o1, JSONObject o2) {
+    										Integer value1 = o1.getInteger("value");
+    										Integer value2 = o2.getInteger("value");
+    										return value2 - value1;
+    									}
+
+    								});
+
+    							}
+    							answer.setKeyCloudData(keyValueList);
+        		    		}
         		    		// 雷达图数据
         		    		List<Map<String, Object>> radar = new ArrayList<>();
         		    		List<String> character4Type = MBTI16Type.CHARACTER_4_TYPE;

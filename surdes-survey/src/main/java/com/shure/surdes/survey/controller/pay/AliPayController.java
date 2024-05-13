@@ -136,7 +136,7 @@ public class AliPayController {
             	SurveyOrder order = surveyOrderService.callbackUpdateOrder(outTradeNo, tradeNo, totalAmount, sellerId, timestamp, OrderPayStatus.VERIFICATION_FAILED);
             	log.info("回调保存订单信息：" + order);
             	log.info("支付宝回调签名认证失败，signVerified=false, paramsJson:{}", paramsJson);
-                return AjaxResult.error("支付宝回调签名认证失败！", order);
+                return AjaxResult.success("支付宝回调签名认证失败！", order);
             }
         } catch (AlipayApiException e) {
             log.error("支付宝回调签名认证失败,paramsJson:{},errorMsg:{}", paramsJson, e.getMessage());

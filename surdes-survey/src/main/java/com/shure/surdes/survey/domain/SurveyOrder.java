@@ -36,7 +36,7 @@ public class SurveyOrder {
 	@TableField(exist = false)
 	private String sruveyDesc;
 	
-	/** 金额 */
+	/** 总金额 */
 	private Double amount;
 	
 	/** 支付方式 */
