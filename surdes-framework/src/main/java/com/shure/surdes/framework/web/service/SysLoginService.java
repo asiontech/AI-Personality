@@ -242,6 +242,7 @@ public class SysLoginService {
 	}
 
 	public JSONObject loginByOtherSource(String code, String source, String uuid, Long anId, HttpServletRequest request) {
+		JSONObject json = new JSONObject();
 		log.debug("登录接口时间点："+ System.currentTimeMillis());
 		log.debug("登录后uuid： "+ uuid);
 		// 防止重复提交直接缓存获取数据
@@ -271,13 +272,16 @@ public class SysLoginService {
 				answerJson.setUserId(userId.toString());
 				int row = answerJsonService.updateAnswerJson(answerJson);
 				if (row < 1) {
-					log.info("更新用户userId：{}问卷结果失败");
+					log.info("更新用户userId：{}问卷结果失败", userId);
 				}
 			}
 			return result;
 		}
 		if (StringUtils.isEmpty(code)) {
-			throw new ServiceException("登录失败，获取参数code失败！");
+//			throw new ServiceException("登录失败，获取参数code失败！");
+			json.put("code", 500);
+			json.put("msg", "登录失败，获取参数code失败！");
+			return json;
 		}
 		// 先到数据库查询这个人曾经有没有登录过，没有就注册
 		// 创建授权request
@@ -290,20 +294,32 @@ public class SysLoginService {
 		AuthResponse<AuthUser> login = authRequest.login(AuthCallback.builder().state(uuid).code(code).build());
 		log.debug("login:" + JSONObject.toJSONString(login));
 		if (login == null) {
-			throw new ServiceException("登录失败，获取第三方账户信息失败！");
+//			throw new ServiceException("登录失败，获取第三方账户信息失败！");
+			json.put("code", 500);
+			json.put("msg", "登录失败，获取第三方账户信息失败！");
+			return json;
 		}
 		int loginCode = login.getCode();
 		if (5009 == loginCode) {
-			throw new ServiceException("微博登录信息获取失败，请返回重新登录！");
+//			throw new ServiceException("微博登录信息获取失败，请返回重新登录！");
+			json.put("code", 500);
+			json.put("msg", "微博登录信息获取失败，请返回重新登录！");
+			return json;
 		}
 		if (5000 == loginCode) {
-			throw new ServiceException("登录失败，获取第三方账户信息失败！");
+//			throw new ServiceException("登录失败，获取第三方账户信息失败！");
+			json.put("code", 500);
+			json.put("msg", "登录失败，获取第三方账户信息失败！");
+			return json;
 		}
 		// 先查询数据库有没有该用户
 		AuthUser authUser = login.getData();
 		log.debug("authUser:" + JSONObject.toJSONString(authUser));
 		if (authUser == null) {
-			throw new ServiceException("登录失败，获取第三方账户信息失败！");
+//			throw new ServiceException("登录失败，获取第三方账户信息失败！");
+			json.put("code", 500);
+			json.put("msg", "登录失败，获取第三方账户信息失败！");
+			return json;
 		}
 		SysUserPlus sysUserPlus = new SysUserPlus();
 		sysUserPlus.setUserName(authUser.getUsername()); // 用户名
@@ -314,7 +330,10 @@ public class SysLoginService {
 		sysUser.setUserName(sysUserPlus.getUserName());
 		List<SysUser> sysUsers = userService.selectUserListNoDataScope(sysUser);
 		if (sysUsers.size() > 1) {
-			throw new ServiceException("第三方登录异常，账号重叠");
+//			throw new ServiceException("第三方登录异常，账号重叠");
+			json.put("code", 500);
+			json.put("msg", "登录失败，第三方登录异常，账号重叠！");
+			return json;
 		} else if (sysUsers.size() == 0) {
 			sysUserPlus.setNickName(authUser.getNickname()); // 昵称
 			sysUserPlus.setAvatar(authUser.getAvatar()); // 头像
@@ -434,7 +453,7 @@ public class SysLoginService {
         
 		recordLoginInfo(loginUser.getUserId());
 
-		JSONObject json = new JSONObject();
+		json.put("code", 200);
 		json.put("token", token);
 		json.put("userId", sysUserPlus.getUserId());
 		json.put("sinaToken", authUser.getToken().getAccessToken());

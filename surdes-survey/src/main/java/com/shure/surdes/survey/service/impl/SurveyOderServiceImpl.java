@@ -14,6 +14,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.shure.surdes.common.exception.ServiceException;
 import com.shure.surdes.common.utils.DateUtils;
+import com.shure.surdes.common.utils.SecurityUtils;
 import com.shure.surdes.common.utils.StringUtils;
 import com.shure.surdes.survey.constant.OrderPayStatus;
 import com.shure.surdes.survey.constant.PayType;
@@ -63,27 +64,39 @@ public class SurveyOderServiceImpl extends ServiceImpl<SurveyOderMapper, SurveyO
 
 	@Override
 	public JSONObject submitOrder(SurveyOrder so) {
+		JSONObject json = new JSONObject();
 		log.info("提交订单，订单信息：" + so);
 		Long anId = so.getAnId();
 		Long surveyId = so.getSurveyId();
-//		if (null != surveyId && 4L == surveyId) {
-//			log.info("提交订单，订单信息surveyId：" + surveyId);
-//			so.setSurveyId(1000L);
-//		}
+		Long userId = so.getUserId();
+		if (null == userId) {
+			log.error("参数错误，没有userId！");
+			json.put("code", 500);
+			json.put("msg", "userId获取失败！");
+			return json;
+		}
 		if (null == surveyId) {
 			log.error("参数错误，没有问卷id！");
-			throw new ServiceException("参数错误，没有问卷id！");
+			json.put("code", 500);
+			json.put("msg", "参数错误，没有问卷id！");
+			return json;
 		}
 		// 查询问卷信息
 		Survey survey = surveyService.selectSurveyBySurveyId(surveyId);
 		if (survey == null) {
-			throw new ServiceException("没有找到对应的问卷！");
+			log.error("没有找到对应的问卷！");
+			json.put("code", 500);
+			json.put("msg", "没有找到对应的问卷！");
+			return json;
 		}
 		// 优惠价格
 		Double discountPrice = survey.getDiscountPrice();
 		Integer freeFlag = survey.getFreeFlag();
 		if (0 == freeFlag) {
-			throw new ServiceException("免费问卷，无需支付！");
+			log.error("免费问卷，无需支付！");
+			json.put("code", 500);
+			json.put("msg", "没有找到对应的问卷！");
+			return json;
 		}
 		if (1001L == surveyId && null != anId) { // ai测试时间段
 			AnswerJson answer = answerJsonMapper.selectAnswerJsonByAnId(anId);
@@ -106,13 +119,19 @@ public class SurveyOderServiceImpl extends ServiceImpl<SurveyOderMapper, SurveyO
 				AnswerJson answerJson = list.get(0);
 				so.setAnId(answerJson.getAnId());
 			} else {
-				throw new ServiceException("没有测试结果，请重新测试完成之后再重新提交！");
+				log.error("没有测试结果，请重新测试完成之后再重新提交！");
+				json.put("code", 500);
+				json.put("msg", "没有测试结果，请重新测试完成之后再重新提交！");
+				return json;
 			}
 		}
 		so.setCreateTime(new Date());
 		boolean flag = this.save(so);
 		if (!flag) {
-			throw new ServiceException("订单提交失败，请稍后重试！");
+			log.error("订单提交失败，请稍后重试！");
+			json.put("code", 500);
+			json.put("msg", "订单提交失败，请稍后重试！");
+			return json;
 		}
 		// 按照业务查询订单信息
 		AliPayDTO dto = new AliPayDTO();
@@ -132,7 +151,7 @@ public class SurveyOderServiceImpl extends ServiceImpl<SurveyOderMapper, SurveyO
 		} else {
 			payLink = aliPayService.keyPayment(dto, productCode);
 		}
-		JSONObject json = new JSONObject();
+		json.put("code", 200);
 		json.put("pay", payLink);
 		json.put("order", so);
 		return json;

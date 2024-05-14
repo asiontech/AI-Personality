@@ -66,16 +66,27 @@ public class WeiboLogin {
 
 	@PostMapping("/loginByWeibo")
 	public AjaxResult loginByWeibo(@RequestBody LoginByOtherSourceBody loginByOtherSourceBody, HttpServletRequest request) {
-		AjaxResult ajax = AjaxResult.success();
 		JSONObject json = loginService.loginByOtherSource(loginByOtherSourceBody.getCode(),
 													   loginByOtherSourceBody.getSource(), 
 													   loginByOtherSourceBody.getUuid(), 
 													   loginByOtherSourceBody.getAnId(), 
 													   request);
-		ajax.put("token", json.getString("token"));
-		ajax.put("sinaToken", json.getString("sinaToken"));
-		ajax.put("userId", json.getString("userId"));
-		return ajax;
+		
+//		ajax.put("token", json.getString("token"));
+//		ajax.put("sinaToken", json.getString("sinaToken"));
+//		ajax.put("userId", json.getString("userId"));
+		if (json != null) {
+			Integer code = json.getInteger("code");
+			if (null != code) {
+				if (200 == code) {
+					return AjaxResult.success(json);
+				} else {
+					String msg = json.getString("msg");
+					return AjaxResult.error(msg, json);
+				}
+			}
+		}
+		return AjaxResult.error("登录失败！");
 	}
 	
 	@GetMapping("/callback")

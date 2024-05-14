@@ -735,7 +735,7 @@ public class AnswerJsonServiceImpl implements IAnswerJsonService {
     		surveyId = 1000L;
     	}
     	String aid = vo.getAid();
-    	if (StringUtils.isEmpty(aid)) { // 第一次请求
+    	if (null != retest && 1== retest) { // 第一次请求
     		// aid组合
     		aid = userId + "-" + surveyId + "-" + System.currentTimeMillis();
     		vo.setAid(aid); // 生成队列唯一标识
@@ -791,7 +791,7 @@ public class AnswerJsonServiceImpl implements IAnswerJsonService {
     		surveyId = 1001L;
     	}
     	String aid = vo.getAid();
-    	if (StringUtils.isEmpty(aid)) { // 第一次请求
+    	if (null != retest && 1== retest) { // 第一次请求
     		// aid组合
     		aid = userId + "-" + surveyId + "-" + System.currentTimeMillis();
     		vo.setAid(aid); // 生成队列唯一标识

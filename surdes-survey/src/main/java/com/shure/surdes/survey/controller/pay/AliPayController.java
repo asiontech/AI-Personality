@@ -18,13 +18,16 @@ import org.springframework.web.bind.annotation.RestController;
 import com.alibaba.fastjson.JSON;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.internal.util.AlipaySignature;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.shure.surdes.common.core.domain.AjaxResult;
 import com.shure.surdes.survey.constant.OrderPayStatus;
+import com.shure.surdes.survey.domain.Survey;
 import com.shure.surdes.survey.domain.SurveyOrder;
 import com.shure.surdes.survey.pay.zfb.AliPayDTO;
 import com.shure.surdes.survey.pay.zfb.AliPayService;
 import com.shure.surdes.survey.pay.zfb.AliyunProperties;
 import com.shure.surdes.survey.service.ISurveyOrderService;
+import com.shure.surdes.survey.service.ISurveyService;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -47,6 +50,9 @@ public class AliPayController {
     
     @Autowired
     ISurveyOrderService surveyOrderService;
+    
+    @Autowired
+    ISurveyService surveyService;
 
     @ApiOperation(value = "手机网站支付,返回跳转链接")
     @PostMapping("/mobilePay")
@@ -104,10 +110,28 @@ public class AliPayController {
                 params.put(name, valueStr);
             }
             paramsJson = JSON.toJSONString(params);
+            // 查询是否重复请求
+            String orderId = params.get("out_trade_no");
+            if (StringUtils.isNotEmpty(orderId)) {
+            	SurveyOrder so = surveyOrderService.getById(Long.valueOf(orderId));
+
+            	if (so != null) {
+            		Integer status = so.getStatus();
+            		if (OrderPayStatus.HAVE_PAY == status) { // 已支付完成，直接返回，
+                    	Long surveyId = so.getSurveyId();
+                    	Survey survey = surveyService.selectSurveyBySurveyId(surveyId);
+            			so.setSurveyName(survey.getSurveyName());
+            			log.info("重复请求查询订单状态：" + so);
+            			return AjaxResult.success(so);
+            		}
+            	}
+            }
             log.info("支付宝回调信息为: {}", paramsJson);
             //todo 调用SDK验证签名,是支付宝公钥不是应用公钥
 //            boolean signVerified = AlipaySignature.rsaCertCheckV1(params, aliyunProperties.getAliPublicKeyPath(),"utf-8", "RSA2");
-            boolean signVerified =AlipaySignature.rsaCheckV1(params, aliyunProperties.getAliPublicKey(), "utf-8", "RSA2");
+            boolean signVerified = AlipaySignature.rsaCheckV1(params, aliyunProperties.getAliPublicKey(), "UTF-8", "RSA2");
+            log.info("验签结果：" + signVerified);
+            
             if (signVerified) {
                 // 做业务操作,如改订单状态,保存回调信息等
             	// 商户订单号
@@ -120,7 +144,10 @@ public class AliPayController {
             	String timestamp = params.get("timestamp");
             	// 更新订单状态，记录回调信息
             	SurveyOrder order = surveyOrderService.callbackUpdateOrder(outTradeNo, tradeNo, totalAmount, sellerId, timestamp, OrderPayStatus.HAVE_PAY);
-                log.info("回调保存订单信息：" + order);
+                log.info("验签成功回调保存订单信息：" + order);
+            	Long surveyId = order.getSurveyId();
+            	Survey survey = surveyService.selectSurveyBySurveyId(surveyId);
+            	order.setSurveyName(survey.getSurveyName());
             	// 如果签名验证正确，返回success
                 return AjaxResult.success(order);
             } else {
@@ -134,11 +161,15 @@ public class AliPayController {
             	String timestamp = params.get("timestamp");
             	// 更新订单状态，记录回调信息
             	SurveyOrder order = surveyOrderService.callbackUpdateOrder(outTradeNo, tradeNo, totalAmount, sellerId, timestamp, OrderPayStatus.VERIFICATION_FAILED);
-            	log.info("回调保存订单信息：" + order);
+            	Long surveyId = order.getSurveyId();
+            	Survey survey = surveyService.selectSurveyBySurveyId(surveyId);
+            	order.setSurveyName(survey.getSurveyName());
+            	log.info("验签失败回调保存订单信息：" + order);
             	log.info("支付宝回调签名认证失败，signVerified=false, paramsJson:{}", paramsJson);
-                return AjaxResult.success("支付宝回调签名认证失败！", order);
+                return AjaxResult.error("支付宝回调签名认证失败！", order);
             }
         } catch (AlipayApiException e) {
+        	e.printStackTrace();
             log.error("支付宝回调签名认证失败,paramsJson:{},errorMsg:{}", paramsJson, e.getMessage());
             return AjaxResult.error("failure");
         }

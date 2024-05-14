@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.alibaba.fastjson.JSONObject;
 import com.shure.surdes.common.core.domain.AjaxResult;
 import com.shure.surdes.survey.domain.SurveyOrder;
 import com.shure.surdes.survey.service.ISurveyOrderService;
@@ -28,7 +29,19 @@ public class SurveyOrderController {
     @ApiOperation(value = "提交订单，返回支付链接，以及订单信息")
     @PostMapping("/add")
 	public AjaxResult submitOrder(@RequestBody SurveyOrder so) {
-		return AjaxResult.success(surveyOrderService.submitOrder(so));
+    	JSONObject json = surveyOrderService.submitOrder(so);
+    	if (json != null) {
+    		Integer code = json.getInteger("code");
+    		if (null != code) {
+    			if (200 == code) {
+    				return AjaxResult.success(json);
+    			} else {
+    				String msg = json.getString("msg");
+    				return AjaxResult.error(msg);
+    			}
+    		}
+    	}
+		return AjaxResult.error("提交订单失败，请稍后重试！");
 	}
     
     @ApiOperation(value = "查询订单状态，返回订单信息")
