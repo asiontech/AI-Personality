@@ -129,19 +129,39 @@ public class AliPayController {
             log.info("支付宝回调信息为: {}", paramsJson);
             //todo 调用SDK验证签名,是支付宝公钥不是应用公钥
 //            boolean signVerified = AlipaySignature.rsaCertCheckV1(params, aliyunProperties.getAliPublicKeyPath(),"utf-8", "RSA2");
-            boolean signVerified = AlipaySignature.rsaCheckV1(params, aliyunProperties.getAliPublicKey(), "UTF-8", "RSA2");
+            String aliPublicKey = aliyunProperties.getAliPublicKey();
+            log.debug("支付宝公钥：" + aliPublicKey);
+        	String outTradeNo = params.get("out_trade_no");
+        	log.debug("订单号" + outTradeNo);
+        	// 支付宝交易号
+        	String tradeNo = params.get("trade_no");
+        	log.debug("支付宝交易流水号" + tradeNo);
+        	// 支付总金额
+        	String totalAmount = params.get("total_amount");
+        	log.debug("实付总金额" + totalAmount);
+        	String sellerId = params.get("seller_id");
+        	log.debug("收款账号" + sellerId);
+        	String timestamp = params.get("timestamp");
+        	log.debug("时间戳" + timestamp);
+        	String signType = params.get("sign_type");
+        	log.debug("签名类型" + signType);
+        	String sign = params.get("sign");
+        	log.debug("签名" + sign);
+        	String continueFlag = params.get("continueFlag");
+        	log.debug("continueFlag:" + continueFlag);
+        	String authAppId = params.get("auth_app_id");
+        	log.debug("authAppId:" + authAppId);
+        	String appId = params.get("app_id");
+        	log.debug("appId：" + appId);
+        	String charset = params.get("charset");
+        	log.debug("编码类型：" + charset);
+        	String method = params.get("method");
+        	log.debug("method：" + method);
+            boolean signVerified = AlipaySignature.rsaCheckV1(params, aliPublicKey, "utf-8", "RSA2");
             log.info("验签结果：" + signVerified);
-            
             if (signVerified) {
                 // 做业务操作,如改订单状态,保存回调信息等
             	// 商户订单号
-            	String outTradeNo = params.get("out_trade_no");
-            	// 支付宝交易号
-            	String tradeNo = params.get("trade_no");
-            	// 支付总金额
-            	String totalAmount = params.get("total_amount");
-            	String sellerId = params.get("seller_id");
-            	String timestamp = params.get("timestamp");
             	// 更新订单状态，记录回调信息
             	SurveyOrder order = surveyOrderService.callbackUpdateOrder(outTradeNo, tradeNo, totalAmount, sellerId, timestamp, OrderPayStatus.HAVE_PAY);
                 log.info("验签成功回调保存订单信息：" + order);
@@ -152,13 +172,6 @@ public class AliPayController {
                 return AjaxResult.success(order);
             } else {
             	// 商户订单号
-            	String outTradeNo = params.get("out_trade_no");
-            	// 支付宝交易号
-            	String tradeNo = params.get("trade_no");
-            	// 支付总金额
-            	String totalAmount = params.get("total_amount");
-            	String sellerId = params.get("seller_id");
-            	String timestamp = params.get("timestamp");
             	// 更新订单状态，记录回调信息
             	SurveyOrder order = surveyOrderService.callbackUpdateOrder(outTradeNo, tradeNo, totalAmount, sellerId, timestamp, OrderPayStatus.VERIFICATION_FAILED);
             	Long surveyId = order.getSurveyId();
