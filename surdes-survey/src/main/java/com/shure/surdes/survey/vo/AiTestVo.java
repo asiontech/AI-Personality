@@ -39,4 +39,8 @@ public class AiTestVo {
     
     /** 结束时间 */
     private String endTime;
+
+    private Integer num;
+
+    private String type;
 }

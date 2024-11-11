@@ -3,6 +3,7 @@ package com.shure.surdes.survey.service.impl;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.alibaba.fastjson.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -71,8 +72,10 @@ public class SurveyServiceImpl implements ISurveyService {
     		// 查询用户支付订单
     		LambdaQueryWrapper<SurveyOrder> wrapper = new LambdaQueryWrapper<SurveyOrder>();
     		wrapper.eq(SurveyOrder::getUserId, userId);
+            wrapper.orderByDesc(SurveyOrder::getCreateTime);
     		wrapper.eq(SurveyOrder::getStatus, 1);
     		List<SurveyOrder> orderList = surveyOrderService.list(wrapper);
+    		String starUid="";
     		if (StringUtils.isNotEmpty(orderList)) {
     			List<Long> surveyIds = orderList.stream().map(SurveyOrder::getSurveyId).distinct().collect(Collectors.toList());
     			for (Survey su : list) {
@@ -83,13 +86,34 @@ public class SurveyServiceImpl implements ISurveyService {
     				}
     			}
     		}
-    		if (StringUtils.isNotEmpty(answerJsonList)) {
+
+
+
+
+
+
+            if (StringUtils.isNotEmpty(answerJsonList)) {
     			List<Long> surveyIds = answerJsonList.stream().map(AnswerJson::getSurveyId).collect(Collectors.toList());
     			for (Survey su : list) {
     				Long surveyId = su.getSurveyId();
     				// 判断是否已经测试过
     				if (surveyIds.contains(surveyId)) {
     					su.setTestStaus("finish"); // 已测评
+                        //pk测试未支付时，查找starUid
+                        if(surveyId==1002L){
+                            LambdaQueryWrapper<SurveyOrder> pkWrapper=new LambdaQueryWrapper<>();
+                            pkWrapper.eq(SurveyOrder::getUserId, userId);
+                            pkWrapper.orderByDesc(SurveyOrder::getCreateTime);
+                            pkWrapper.eq(SurveyOrder::getSurveyId,1002L);
+                            pkWrapper.last("limit 1");
+                            SurveyOrder pkOrder=surveyOrderService.getOne(pkWrapper);
+
+                            if (pkOrder!=null&&StringUtils.isNotEmpty(pkOrder.getStarUid())) {
+                                su.setRemark(pkOrder.getStarUid());
+                            }else {
+                                su.setTestStaus(null);
+                            }
+                        }
     				}
     			}
     		}

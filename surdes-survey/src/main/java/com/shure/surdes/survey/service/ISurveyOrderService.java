@@ -6,6 +6,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.shure.surdes.survey.domain.SurveyOrder;
 
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * 订单业务层
  * @author color
@@ -29,5 +31,10 @@ public interface ISurveyOrderService extends IService<SurveyOrder> {
 	 */
 	public SurveyOrder callbackUpdateOrder(String outTradeNo, String tradeNo, String payAmount, 
 			String sellerId, String timestamp, Integer status);
+
+
+	public JSONObject getOrder(HttpServletRequest request);
+
+	public JSONObject selectByMchOrderNo(String orderNo);
 	
 }

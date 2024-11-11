@@ -21,6 +21,7 @@ public interface AnswerJsonMapper {
      */
     public AnswerJson selectAnswerJsonByAnId(Long anId);
 
+    public AnswerJson selectAnswerJsonByWbUid(String wbUid);
     /**
      * 查询问卷答案结果json列表
      *

@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -53,6 +54,9 @@ public class AnswerJson extends BaseEntity {
     @Excel(name = "答题人唯一标识")
     private String userId;
 
+    @Excel(name = "微博id")
+    private String wbUid;
+
     /**
      * 答题人姓名
      */
@@ -80,6 +84,9 @@ public class AnswerJson extends BaseEntity {
     private Date endTime;
 
     private List<Map<String, Object>> radar;
+
+    @TableField(exist = false)
+    private String starUid;
     
     /** 词云封装数据 */
     private List<JSONObject> keyCloudData;
@@ -202,6 +209,22 @@ public class AnswerJson extends BaseEntity {
 
     public String getBookCode() {
         return bookCode;
+    }
+
+    public String getWbUid() {
+        return wbUid;
+    }
+
+    public void setWbUid(String wbUid) {
+        this.wbUid = wbUid;
+    }
+
+    public String getStarUid() {
+        return starUid;
+    }
+
+    public void setStarUid(String starUid) {
+        this.starUid = starUid;
     }
 
     @Override

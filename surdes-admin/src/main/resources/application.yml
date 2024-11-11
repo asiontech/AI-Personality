@@ -22,7 +22,12 @@ surdes:
 # 模型分析服务接口
 model:
   url: http://s2.gkcns.com:1230/
+#  url: http://192.168.101.23:1230/
 
+pay:
+#  url: http://192.168.101.61:9218/
+  url: http://merchant:9218/
+  return_url: https://wuxinai.asiontech.com/payCallback
 #测试配置
 #aliyun:
 #  app-id: 9021000136650598
@@ -34,43 +39,49 @@ model:
 #  #应用公钥
 #  app-public-key: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAlLbR4IL/OgsBEJ2LZYTeMSN13i3rU/EVcHXHFxz0NK0O6Jbs97m0m4C0fbWAdHpDQCrrm+ZDmAoUK8pjr8j9xizvHfC2hM9mFM71DbD0FklcA7o1BuYgwksFUMG5Y19fOp4QICt8T4dRn6OrG/kMqX8Bnqg643eg898++aVZoVcpXEI3ZpC1LG+9xNosXWjA5aIl3mD+TSFiCy6EYhFatQjmSclcGJEUUp4OAG71RcJoHJ2vasGy0UXg+uFlxQZJUKF0Hg/G3Ci/PKoY/hBjlkpP4wFBV5jvvUF7iJOsdv9VV13yQF3EMHBfRucc/PuPi6TrHoCgvwKU0hS7lCQeyQIDAQAB
 #   #应用公钥路径
-#  app-public-key-path: 
+#  app-public-key-path:
 #  #支付宝公钥
 #  ali-public-key: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA0JamarupTZihMmVQ1t4MEpFMiFee+4qJDpp6sEE8qEHBU/WQrAnZxFXSGSxuPGnY5KvyCQIPPnWQDBjfP6dGOwjWb5nvaoe28/1qCsa3BZJNOEeiffBS1u9MrJ5NmfF89PWPAemQCcoscbcgH70YTKrYfNl45ijRaU3Cn4NS77vm3dcnCXAnGeaFoPov66POXrUBA3cicYaVKE6cyIJYnbQ9CFOy/8PVHDujufrShywfyjMcwmCNETmty6ngItaDw4boCo0s665tfAcIa5hNwpHt6KJpYERTNsXkqBnHBc0wnFEvg4QacKwfJInB2V05yPUOQTnD/V5H44QvcZc4CQIDAQAB
 #  #支付宝公钥路径
-#  ali-public-key-path: 
+#  ali-public-key-path:
 #  #支付宝根证书路径
-#  ali-root-key-path: 
+#  ali-root-key-path:
 #线上配置
 aliyun:
   app-id: 2021004142643039
   server-url: https://openapi.alipay.com/gateway.do
 #  notify-url: http://s2.gkcns.com:2017/payCallback #支付回调地址
-  notify-url: https://dawu.asiontech.com/payCallback #支付回调地址
+  notify-url: https://wuxinai.asiontech.com/payCallback #支付回调地址
 #  notify-url: http://s2.gkcns.com:2017/dev-api/ali/callback #支付回调地址
   #应用私钥
   private-key: MIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQCM6+ITtaft1fgacUXa6lGEn/PNAQ3O4vue7hwk+wtednvrTZVnz/DBmviqawpMz7cIOqwEOrpiiHPoVP4DM3fvouN8HTE+Isxb8F0j5h/cu8GnxPjMLQ4fkQltSEfihTvUZbfNJe3H9mqSFJw1Yl3WxSzhPyEAGoqTUbkI4XdIjrp6O5QVZJ7hXIf1FncgZcZH2r7G4QjRjUI4IQlU7JV59Tj09eGH/cmxVicktNnkP18rUSm4cR4WU8JsGPxfb5YoPYmQ/m9nCoCT38ct4bcmNOPjTOARl7gBb9TnfhZQGOc/oFkdD6uDKcIEZEx1N3GwTLjBWUlFGy1GgOF/OzTxAgMBAAECggEAcHre6sh2D3pYHBMJpOCezHM3kAwlT1sRaBu6TzIqMu3zny8/76qkCoR9stjZUdIB0Am0v3N4zakIiws77KYqNxYW6TwL0ALKhx/l1/+YswESY6zuwVm9CikkExw8dGvQA4plGNQLZS4khhD5Vgr7x69+UROobYLB1TDHtnTwVvKV3zzhpV2vPxXlVcSjatcQxJA6mKDm+eN4NK1W+Z+cyA3f7gLCh/2i+F+sq6CcMK9Aun5NkxTZ/Jb1vJ7YxBJvOfo9BtDGzX8C0ILMdwhBfxrToL1tU0/IsGqQpzCmfuGS1HKkvDcRsn3TxB5uTO+D6zuJgC57LUVV2yd0xxmq+QKBgQDJXSLyCck6k9UlG2J/M3M6Mo1eLKNhT4CgAhNS4YD8ECYct31X7wsJ58F8WMwEDgpgUykoS6vK57znp2OxLv9aPT1ftTKcOX20++n8APfnJPVASoElPLxE9POvDHFUnPBtu3X4d38Pw1jTk2I6APRXgm9ic6yM7D3tNqpg9jE1swKBgQCzKGC8RAHyBsbqrWnPbRtJNHi2Sl/z5d97ZtuXT6cd7pjRRB+IyorOysWNWTMxsuAyY195A+l3T77nl6vwh7NaOpF85yaoWFzc5pjkkNpiZPcUFxesTYGMZfB4fsscg2wyqYm2+JEAFhGPG8ZiTl/ayiiuF3NN1ZFyrpbzQWPgywKBgQCqm53rIr17Qxv5h51JlucPLRu36ew3m6uoZnnG5Edryabw98pcga2Bo/m8iGO7H8ZM3MjnWk3g6b2VLK77xY0XAQIKIDUURmWqvTH/kTZ5gkfFRBrt2OrPJhd9ffZbsWjIIGeQsHZYfbO594rnCD3+EwaajNVqxRKm9IUhCBajnwKBgQCeluaSoOzL7p3UjS8101ItCgq06r9nahva46EMnxDC2TtjOxdjAk+/YBVh2w0LOFlnoTmZKRJYcDoATe2A3M6x11iEJSW+LYH+dQ3wfh0irldc7FgjSPSdcHteXnazRc7YReVHF19boS1n7eE9kj0dsogyG0YRJzU6PDwZFtAv4wKBgQC6+3vIsUNpI69Nj8OhkXTkKQ4lijTinJVq1bzfQMtnCevVe3vDv2SR1+Yj7u0Ng0ROmrY+Xn5c+W5oPYGEdBzaegNrD5LUOXoehTLz/M3Ta4kZgmC/A3TcMag+J+xbXVVvEuBtqHzpneA1Zve3KEpd6jK+8j04tW+m52IXcezMug==
   #应用公钥
   app-public-key: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAjOviE7Wn7dX4GnFF2upRhJ/zzQENzuL7nu4cJPsLXnZ7602VZ8/wwZr4qmsKTM+3CDqsBDq6Yohz6FT+AzN376LjfB0xPiLMW/BdI+Yf3LvBp8T4zC0OH5EJbUhH4oU71GW3zSXtx/ZqkhScNWJd1sUs4T8hABqKk1G5COF3SI66ejuUFWSe4VyH9RZ3IGXGR9q+xuEI0Y1COCEJVOyVefU49PXhh/3JsVYnJLTZ5D9fK1EpuHEeFlPCbBj8X2+WKD2JkP5vZwqAk9/HLeG3JjTj40zgEZe4AW/U534WUBjnP6BZHQ+rgynCBGRMdTdxsEy4wVlJRRstRoDhfzs08QIDAQAB
    #应用公钥路径
-  app-public-key-path: 
+  app-public-key-path:
   #支付宝公钥
   ali-public-key: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA1H1zHCNOcyQLqSZDvYqNjaIRc2qR8+FbJtmm0yXooW8JqR1F8Sa7TVICObv+raafEVSc3xuS5JQyRQo0oKj/k2hQuFqul20NeeQwSD6kac3onelXJQL9iJqHcK+xIthIl/nEy4ZbqKrWJWS8stFh7vPq7081cdG5AsoMOuj53pebfCxO/TNI98cMTHKk9mxPH9cCOWeZbT0oQlNHvbV27kvv4OJ0GqABxleoeKE8TZJgltu2Utp8MFdQdL461uN3RHDBK7yDlr6AfG87U1cweJjI11GSmj9lO82oDJYa5NuwrcImN5NSGlDarjquMOjbCD4CgRyXKaWi54ecNBGoOQIDAQAB
   #支付宝公钥路径
-  ali-public-key-path: 
+  ali-public-key-path:
   #支付宝根证书路径
-  ali-root-key-path: 
+  ali-root-key-path:
   
 justauth:
   weibo:
-     #线上配置
-    clientId: 2008830081
-    clientSecret: d0985ddca849ef00d1de73d61b231d8b
-    redirectUri: https://dawu.asiontech.com/callback
+#     #线上配置
+    clientId: 3852646388
+    clientSecret: 93c3475b44aa83a9a12464bf022141f4
+    redirectUri: https://wuxinai.asiontech.com/callback
 #测试配置
-#    clientId: 613550917
-#    clientSecret: 449de11598449c7fd2ec29b34d8d32c1
+#    clientId: 3851982085
+#    clientSecret: 2cf2e3615b0c2f8c5613c2450ecd8a95
+#    redirectUri: http://dawu.asiontech.com:2017/callback
 #    redirectUri: http://s2.gkcns.com:2017/callback
+
+star:
+#  imgUrl:  D:/home/startImg/
+  imgUrl: /home/startImg/
+#  url: /home/profile/
     
 
 # 开发环境配置
@@ -124,6 +135,7 @@ spring:
   redis:
     # 地址
     host: redis
+#    host: localhost
 #    host: 192.168.101.51
     # 端口，默认为6379
     port: 6379
@@ -172,7 +184,8 @@ mybatis-plus:
     global-config:
       db-config:
         id-type: auto
-
+#    configuration:
+#      log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 # PageHelper分页插件
 pagehelper:
   helperDialect: mysql

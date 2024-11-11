@@ -31,15 +31,16 @@ public class SurveyOrderController {
 	public AjaxResult submitOrder(@RequestBody SurveyOrder so) {
     	JSONObject json = surveyOrderService.submitOrder(so);
     	if (json != null) {
-    		Integer code = json.getInteger("code");
-    		if (null != code) {
-    			if (200 == code) {
-    				return AjaxResult.success(json);
-    			} else {
-    				String msg = json.getString("msg");
-    				return AjaxResult.error(msg);
-    			}
-    		}
+    		return AjaxResult.success(json);
+//    		Integer code = json.getInteger("code");
+//    		if (null != code) {
+//    			if (200 == code) {
+//    				return AjaxResult.success(json);
+//    			} else {
+//    				String msg = json.getString("msg");
+//    				return AjaxResult.error(msg);
+//    			}
+//    		}
     	}
 		return AjaxResult.error("提交订单失败，请稍后重试！");
 	}

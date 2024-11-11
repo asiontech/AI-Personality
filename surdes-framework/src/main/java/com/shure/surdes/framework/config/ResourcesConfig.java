@@ -2,8 +2,10 @@ package com.shure.surdes.framework.config;
 
 import com.shure.surdes.common.config.RuoYiConfig;
 import com.shure.surdes.common.constant.Constants;
+import com.shure.surdes.framework.config.properties.FilePathProperties;
 import com.shure.surdes.framework.interceptor.RepeatSubmitInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
@@ -23,11 +25,17 @@ public class ResourcesConfig implements WebMvcConfigurer {
     @Autowired
     private RepeatSubmitInterceptor repeatSubmitInterceptor;
 
+    @Autowired
+    private FilePathProperties filePathProperties;
+
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         /** 本地文件上传路径 */
         registry.addResourceHandler(Constants.RESOURCE_PREFIX + "/**")
                 .addResourceLocations("file:" + RuoYiConfig.getProfile() + "/");
+
+        registry.addResourceHandler(Constants.Star_Img_PREFIX + "/**")
+                .addResourceLocations("file:" + filePathProperties.getImgUrl());
 
         /** swagger配置 */
         registry.addResourceHandler("/swagger-ui/**")

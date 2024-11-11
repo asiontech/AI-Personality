@@ -7,7 +7,7 @@ import com.ijpay.wxpay.WxPayApiConfig;
  * @author Javen
  */
 public abstract class AbstractWxPayApiController {
-	
+
     /**
      * 获取微信支付配置
      *

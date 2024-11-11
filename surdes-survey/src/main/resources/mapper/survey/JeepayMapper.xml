@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shure.surdes.survey.mapper.JeepayOrderMapper">
+
+    <resultMap type="JeepayOrder" id="JeepayOrderResult">
+        <result property="payOrderId" column="pay_order_id"/>
+        <result property="mchNo" column="mch_no"/>
+        <result property="isvNo" column="isv_no"/>
+        <result property="appId" column="app_id"/>
+        <result property="mchName" column="mch_name"/>
+        <result property="mchOrderNo" column="mch_order_no"/>
+        <result property="ifCode" column="if_code"/>
+        <result property="wayCode" column="way_code"/>
+        <result property="amount" column="amount"/>
+        <result property="mchFeeRate" column="mch_fee_rate"/>
+        <result property="mchFeeAmount" column="mch_fee_amount"/>
+        <result property="currency" column="currency"/>
+        <result property="state" column="state"/>
+        <result property="notifyState" column="notify_state"/>
+        <result property="clientIp" column="client_ip"/>
+        <result property="subject" column="subject"/>
+        <result property="body" column="body"/>
+        <result property="channelExtra" column="channel_extra"/>
+        <result property="channelUser" column="channel_user"/>
+        <result property="channelOrderNo" column="channel_order_no"/>
+        <result property="refundState" column="refund_state"/>
+        <result property="refundTimes" column="refund_times"/>
+        <result property="refundAmount" column="refund_amount"/>
+        <result property="divisionMode" column="division_mode"/>
+        <result property="divisionState" column="division_state"/>
+        <result property="divisionLastTime" column="division_last_time"/>
+        <result property="errCode" column="err_code"/>
+        <result property="errMsg" column="err_msg"/>
+        <result property="notifyUrl" column="notify_url"/>
+        <result property="returnUrl" column="return_url"/>
+        <result property="expiredTime" column="expired_time"/>
+        <result property="successTime" column="success_time"/>
+    </resultMap>
+
+    <sql id="selectList">
+        select pay_order_id,mch_no,isv_no,app_id,mch_name,mch_type,mch_order_no,if_code,way_code,amount,mch_fee_rate,mch_fee_amount,currency,state,notify_state,client_ip,`subject`,body,channel_extra,channel_user,channel_order_no,refund_state,refund_times,refund_amount,division_mode,division_state,division_last_time,err_code,err_msg,ext_param,notify_url,return_url,expired_time,success_time,created_at,updated_at
+        from t_pay_order
+    </sql>
+
+    <select id="selectByMchOrderNo" resultMap="JeepayOrderResult">
+        <include refid="selectList"/>
+        <where>
+             mch_order_no = #{mchOrderNo}
+        </where>
+    </select>
+</mapper>

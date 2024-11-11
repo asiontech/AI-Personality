@@ -77,6 +77,8 @@ public class Survey extends BaseEntity {
     /** 特惠价格 */
     private Double discountPrice;
 
+    private String remark;
+
     public Integer getFreeFlag() {
 		return freeFlag;
 	}

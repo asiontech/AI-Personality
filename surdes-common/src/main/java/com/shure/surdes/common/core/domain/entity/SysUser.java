@@ -96,6 +96,8 @@ public class SysUser extends BaseEntity
     /** 角色ID */
     private Long roleId;
 
+    private String bigAvatarBase64;
+
     public SysUser()
     {
 
@@ -324,7 +326,15 @@ public class SysUser extends BaseEntity
 		this.source = source;
 	}
 
-	@Override
+    public String getBigAvatarBase64() {
+        return bigAvatarBase64;
+    }
+
+    public void setBigAvatarBase64(String bigAvatarBase64) {
+        this.bigAvatarBase64 = bigAvatarBase64;
+    }
+
+    @Override
     public String toString() {
         return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
             .append("userId", getUserId())

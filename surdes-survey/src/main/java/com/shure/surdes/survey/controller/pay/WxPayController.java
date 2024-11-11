@@ -10,6 +10,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -120,10 +121,12 @@ public class WxPayController extends AbstractWxPayApiController {
      * 微信H5 支付
      * 注意：必须再web页面中发起支付且域名已添加到开发配置中
      */
+    @ApiOperation(value = "微信H5 支付")
     @RequestMapping(value = "/wapPay", method = {RequestMethod.POST, RequestMethod.GET})
     public void wapPay(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String ip = IpKit.getRealIp(request);
         if (StrUtil.isBlank(ip)) {
+            // TODO: 2024/10/14  
             ip = "127.0.0.1";
         }
 
@@ -180,12 +183,14 @@ public class WxPayController extends AbstractWxPayApiController {
     /**
      * 公众号支付
      */
+    @ApiOperation(value = "公众号支付")
     @RequestMapping(value = "/webPay", method = {RequestMethod.POST, RequestMethod.GET})
     @ResponseBody
     public AjaxResult webPay(HttpServletRequest request, @RequestParam("total_fee") String totalFee) {
         // openId，采用 网页授权获取 access_token API：SnsAccessTokenApi获取
         String openId = (String) request.getSession().getAttribute("openId");
         if (openId == null) {
+            // TODO: 2024/10/14  
             openId = "11111111";
         }
 
@@ -246,6 +251,7 @@ public class WxPayController extends AbstractWxPayApiController {
     /**
      * 扫码模式一
      */
+    @ApiOperation(value = "扫码模式一")
     @RequestMapping(value = "/scanCode1", method = {RequestMethod.POST, RequestMethod.GET})
     @ResponseBody
     public AjaxResult scanCode1(HttpServletRequest request, HttpServletResponse response,
@@ -278,6 +284,7 @@ public class WxPayController extends AbstractWxPayApiController {
     /**
      * 扫码支付模式一回调
      */
+    @ApiOperation(value = "扫码支付模式一回调")
     @RequestMapping(value = "/scanCodeNotify", method = {RequestMethod.POST, RequestMethod.GET})
     @ResponseBody
     public String scanCodeNotify(HttpServletRequest request, HttpServletResponse response) {
@@ -477,6 +484,8 @@ public class WxPayController extends AbstractWxPayApiController {
                 //用户支付中，需要输入密码
                 if (USER_PAYING.equals(errCode)) {
                     //等待5秒后调用【查询订单API】
+                    // TODO: 2024/10/14
+
                 }
             }
             log.info("提交刷卡支付失败>>" + xmlResult);
@@ -731,6 +740,7 @@ public class WxPayController extends AbstractWxPayApiController {
             params.put("partner_trade_no", System.currentTimeMillis() + "");
             params.put("nonce_str", System.currentTimeMillis() + "");
             //收款方银行卡号
+            // TODO: 2024/10/14
             params.put("enc_bank_no", RsaKit.encryptByPublicKeyByWx("银行卡号", PUBLIC_KEY));
             //收款方用户名
             params.put("enc_true_name", RsaKit.encryptByPublicKeyByWx("银行卡持有人姓名", PUBLIC_KEY));
@@ -909,6 +919,7 @@ public class WxPayController extends AbstractWxPayApiController {
             log.info("退款通知解密后的数据=" + decryptData);
             // 更新订单信息
             // 发送通知等
+            // TODO: 2024/10/14  
             Map<String, String> xml = new HashMap<String, String>(2);
             xml.put("return_code", "SUCCESS");
             xml.put("return_msg", "OK");
@@ -971,6 +982,7 @@ public class WxPayController extends AbstractWxPayApiController {
         if (WxPayKit.verifyNotify(params, getApiConfig().getPartnerKey(), SignType.HMACSHA256)) {
             if (WxPayKit.codeIsOk(returnCode)) {
                 // 更新订单信息
+                // TODO: 2024/10/14
                 // 发送通知等
                 Map<String, String> xml = new HashMap<String, String>(2);
                 xml.put("return_code", "SUCCESS");

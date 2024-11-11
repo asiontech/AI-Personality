@@ -139,6 +139,9 @@ public class Constants
      */
     public static final String RESOURCE_PREFIX = "/profile";
 
+
+    public static final String Star_Img_PREFIX = "/starImg";
+
     /**
      * RMI 远程方法调用
      */

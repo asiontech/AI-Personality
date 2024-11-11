@@ -12,6 +12,7 @@
         <result property="answerResultOrigin" column="answer_result_origin"/>
         <result property="keyCloud" column="key_cloud"/>
         <result property="userId" column="user_id"/>
+        <result property="wbUid" column="wb_uid"/>
         <result property="userName" column="user_name"/>
         <result property="createTime" column="create_time"/>
         <result property="bookCode" column="book_code"/>
@@ -68,6 +69,11 @@
         where an_id = #{anId}
     </select>
 
+    <select id="selectAnswerJsonByWbUid" parameterType="String" resultMap="AnswerJsonResult">
+        <include refid="selectAnswerJsonVo"/>
+        where wb_uid = #{wbUid}  order by create_time desc limit 1
+    </select>
+
     <insert id="insertAnswerJson" parameterType="AnswerJson" useGeneratedKeys="true" keyProperty="anId">
         insert into tb_answer_json
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -83,6 +89,7 @@
             <if test="surveyType != null">survey_type,</if>
             <if test="startTime != null">start_time,</if>
             <if test="endTime != null">end_time,</if>
+            <if test="wbUid!=null">wb_uid,</if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="surveyId != null">#{surveyId},</if>
@@ -97,6 +104,7 @@
             <if test="surveyType != null">#{surveyType},</if>
             <if test="startTime != null">#{startTime},</if>
             <if test="endTime != null">#{endTime},</if>
+            <if test="wbUid != null">#{wbUid},</if>
         </trim>
     </insert>
 
