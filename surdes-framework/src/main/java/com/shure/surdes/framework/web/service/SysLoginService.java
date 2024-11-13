@@ -5,8 +5,17 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
+import javax.crypto.Cipher;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.HttpServletRequest;
 
+import cn.hutool.http.HttpUtil;
+import com.alibaba.fastjson.JSON;
+import com.shure.surdes.common.core.domain.AjaxResult;
+import com.shure.surdes.common.core.domain.model.WxLoginBody;
+import com.shure.surdes.common.utils.http.HttpUtils;
+import com.shure.surdes.common.utils.uuid.IdUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -30,7 +39,6 @@ import com.shure.surdes.common.utils.DateUtils;
 import com.shure.surdes.common.utils.MessageUtils;
 import com.shure.surdes.common.utils.SecurityUtils;
 import com.shure.surdes.common.utils.ServletUtils;
-import com.shure.surdes.common.utils.StringUtils;
 import com.shure.surdes.common.utils.ip.IpUtils;
 import com.shure.surdes.framework.manager.AsyncManager;
 import com.shure.surdes.framework.manager.factory.AsyncFactory;
@@ -49,6 +57,8 @@ import me.zhyd.oauth.model.AuthResponse;
 import me.zhyd.oauth.model.AuthUser;
 import me.zhyd.oauth.request.AuthRequest;
 import me.zhyd.oauth.request.AuthWeiboRequest;
+import org.springframework.util.StringUtils;
+import sun.misc.BASE64Decoder;
 
 /**
  * 登录校验方法
@@ -460,6 +470,192 @@ public class SysLoginService {
 		// 缓存uuid对应的token, 防止重复提交错误
 		redisCache.setCacheObject("weibo-user:" + uuid, json, 30, TimeUnit.MINUTES);
 		return json;
+	}
+
+
+
+
+
+
+
+
+
+
+	public JSONObject wxLogin(String decryptResult, Long anId,HttpServletRequest request){
+		JSONObject json=new JSONObject();
+
+
+		//字符串转json
+		JSONObject jsonObject = JSONObject.parseObject(decryptResult);
+//        String unionid = jsonObject.getString("unionid");
+		String openId = jsonObject.getString("openId");
+		//获取nickName
+		String nickName = jsonObject.getString("nickName");
+		//获取头像
+		String avatarUrl = jsonObject.getString("avatarUrl");
+
+		JSONObject result = redisCache.getCacheObject("wx-user:" + openId);
+		if (result != null) {
+			String token = result.getString("token");
+			Long userId = result.getLong("userId");
+			SysUser sysUser = userService.selectUserById(userId);
+			LoginUser loginUser = tokenService.getLoginUser(token);
+			sysUser.getUserId();
+			if (null == loginUser) {
+				// 注册成功或者是已经存在的用户
+				loginUser = new LoginUser(sysUser.getUserId(), sysUser.getDeptId(), sysUser,
+						permissionService.getMenuPermission(sysUser));
+				token = tokenService.createToken(loginUser);
+				// 存储到上下文
+				UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginUser, null, loginUser.getAuthorities());
+				authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+				SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+
+				recordLoginInfo(loginUser.getUserId());
+			} else {
+				tokenService.verifyToken(loginUser);
+			}
+			if (null != anId) {
+				AnswerJson answerJson = answerJsonService.selectAnswerJsonByAnId(anId);
+				answerJson.setUserId(userId.toString());
+				int row = answerJsonService.updateAnswerJson(answerJson);
+				if (row < 1) {
+					log.info("更新用户userId：{}问卷结果失败", userId);
+				}
+			}
+			return result;
+		}
+
+
+		//还可以获取其他信息
+		//根据openid判断数据库中是否有该用户
+		//根据openid查询用户信息
+//		SysUserPlus wxUser = sysUserPlusService.selectWxUserByOpenId(openId);
+
+		SysUserPlus sysUserPlus=new SysUserPlus();
+		sysUserPlus=sysUserPlusService.selectWxUserByOpenId(openId);
+
+		SysUser sysUser = new SysUser();
+		sysUser.setUserName(sysUserPlus.getUserName());
+		List<SysUser> sysUsers = userService.selectUserListNoDataScope(sysUser);
+		if (sysUsers.size() > 1) {
+//			throw new ServiceException("第三方登录异常，账号重叠");
+			json.put("code", 500);
+			json.put("msg", "登录失败，第三方登录异常，账号重叠！");
+			return json;
+		} else if (sysUsers.size() == 0) {
+			sysUserPlus.setUserName(nickName);
+			sysUserPlus.setNickName(jsonObject.getString("nickName")); // 昵称
+			sysUserPlus.setAvatar(jsonObject.getString("avatarUrl")); // 头像
+//			sysUserPlus.setEmail(authUser.getEmail()); // 邮箱
+//			sysUserPlus.setRemark(authUser.getRemark()); // 备注
+//			sysUserPlus.setSinaUuid(authUser.getUuid()); // uuid
+//			sysUserPlus.setBlog(authUser.getBlog()); // 地址
+//			sysUserPlus.setLocation(authUser.getLocation());
+			sysUserPlus.setPassword(SecurityUtils.encryptPassword("zwgkqaz@2024"));
+//			com.alibaba.fastjson.JSONObject rawUserInfo = authUser.getRawUserInfo();
+//			sysUserPlus.setLargeAvatar(rawUserInfo.getString("avatar_large")); // 大头像
+//			sysUserPlus.setGender(authUser.getGender().getDesc()); // 性别
+//			// 关注数量
+//			sysUserPlus.setFriendsCount(rawUserInfo.getInteger("friends_count"));
+//			sysUserPlus.setFollowersCount(rawUserInfo.getInteger("followers_count")); // 粉丝数量
+			// 插入时间
+			sysUserPlus.setCreateTime(new Date());
+			// 查询头像转成base64编码
+//			String readImage = sinaApi.readImage(authUser.getAvatar());
+//			sysUserPlus.setAvatarBase64(readImage);
+			// 查询头像转成base64编码
+//			String readBigImage = sinaApi.readImage(sysUserPlus.getLargeAvatar());
+//			sysUserPlus.setBigAvatarBase64(readBigImage);
+			// 保存新用户，相当于注册
+			sysUserPlusService.save(sysUserPlus);
+			// 查询用户信息
+			sysUser = userService.selectUserById(sysUserPlus.getUserId());
+
+			AsyncManager.me().execute(AsyncFactory.recordLogininfor(sysUserPlus.getUserName(), Constants.REGISTER,
+					MessageUtils.message("user.register.success")));
+			// 授权普通用户
+			Long[] roleIds = { 2L };
+			userService.insertUserAuth(sysUserPlus.getUserId(), roleIds);
+		} else {
+			sysUser = sysUsers.get(0);
+			Long userId = sysUser.getUserId();
+			sysUserPlus = sysUserPlusService.getById(userId);
+//			sysUserPlus.setRemark(authUser.getRemark()); // 备注
+			sysUserPlus.setAvatar(avatarUrl); // 头像
+			sysUserPlus.setNickName(nickName); // 昵称
+//			sysUserPlus.setSinaUuid(authUser.getUuid()); // uuid
+//			sysUserPlus.setBlog(authUser.getBlog()); // 地址
+//			sysUserPlus.setSource(authUser.getSource()); // 来源
+//			com.alibaba.fastjson.JSONObject rawUserInfo = authUser.getRawUserInfo();
+//			sysUserPlus.setLargeAvatar(rawUserInfo.getString("avatar_large")); // 大头像
+//			sysUserPlus.setGender(authUser.getGender().getDesc()); // 性别
+			String password = sysUser.getPassword();
+			if (StringUtils.isEmpty(password)) {
+				sysUserPlus.setPassword(SecurityUtils.encryptPassword("zwgkqaz@2024"));
+			}
+			// 关注数量followers_count
+//			sysUserPlus.setFriendsCount(rawUserInfo.getInteger("friends_count"));
+//			sysUserPlus.setFollowersCount(rawUserInfo.getInteger("followers_count")); // 粉丝数量
+			// 查询头像转成base64编码
+//			String readImage = sinaApi.readImage(authUser.getAvatar());
+//			sysUserPlus.setAvatarBase64(readImage);
+			// 查询头像转成base64编码
+//			String readBigImage = sinaApi.readImage(sysUserPlus.getLargeAvatar());
+//			sysUserPlus.setBigAvatarBase64(readBigImage);
+
+			sysUserPlus.setUpdateTime(new Date());
+
+//			log.debug("readImage" + readImage);
+			// 更新用户信息
+			sysUserPlusService.updateById(sysUserPlus);
+
+		}
+
+		log.debug("sysUser:" + JSONObject.toJSONString(sysUser));
+		AsyncManager.me().execute(AsyncFactory.recordLogininfor(sysUser.getUserName(), Constants.LOGIN_SUCCESS,
+				MessageUtils.message("user.login.success")));
+
+
+		LoginUser loginUser = new LoginUser(sysUserPlus.getUserId(), sysUser.getDeptId(), sysUser,
+				permissionService.getMenuPermission(sysUser));
+		String token = tokenService.createToken(loginUser);
+		// 存储到上下文
+		UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginUser, null, loginUser.getAuthorities());
+		authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+		SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+
+		recordLoginInfo(loginUser.getUserId());
+
+		json.put("code", 200);
+		json.put("token", token);
+		json.put("userId", sysUserPlus.getUserId());
+		json.put("openId", openId);
+		// 缓存uuid对应的token, 防止重复提交错误
+		redisCache.setCacheObject("wx-user:" + openId, json, 30, TimeUnit.MINUTES);
+		return json;
+
+
+	}
+
+
+	/**
+	 * 微信解密工具
+	 */
+	public static String decryptS5(String sSrc, String encodingFormat, String sKey, String ivParameter) {
+		try {
+			BASE64Decoder decoder = new BASE64Decoder();
+			byte[] raw = decoder.decodeBuffer(sKey);
+			SecretKeySpec skeySpec = new SecretKeySpec(raw, "AES");
+			IvParameterSpec iv = new IvParameterSpec(decoder.decodeBuffer(ivParameter));
+			Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+			cipher.init(Cipher.DECRYPT_MODE, skeySpec, iv);
+			byte[] myendicod = decoder.decodeBuffer(sSrc);
+			byte[] original = cipher.doFinal(myendicod);
+			return new String(original, encodingFormat);
+		} catch (Exception ex) {
+			return null;
+		}
 	}
 
 }

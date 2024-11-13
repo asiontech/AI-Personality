@@ -151,4 +151,30 @@ public class Constants
      * LDAP 远程方法调用
      */
     public static final String LOOKUP_LDAP = "ldap://";
+
+
+    /**
+     * REDIRECT 重定向地址
+     */
+    public static final String REDIRECT = "redirect";
+
+    /**
+     * AUTH_METHOD 授权类型
+     */
+    public static final String AUTH_METHOD = "authMethod";
+    /**
+     * AUTH_METHOD_KEY 登录方式 redisKey
+     */
+    public static final String AUTH_METHOD_KEY = "authMethod:";
+
+
+    /**
+     * LOGIN_TYPE 登录方式
+     */
+    public static final String LOGIN_TYPE = "loginType";
+
+
+    public static final String OTHER_ID = "otherId";
+
+
 }

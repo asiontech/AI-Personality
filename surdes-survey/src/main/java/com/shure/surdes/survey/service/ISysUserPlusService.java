@@ -10,4 +10,6 @@ import com.shure.surdes.survey.domain.SysUserPlus;
  */
 public interface ISysUserPlusService extends IService<SysUserPlus> {
 
+    SysUserPlus selectWxUserByOpenId(String openId);
+
 }

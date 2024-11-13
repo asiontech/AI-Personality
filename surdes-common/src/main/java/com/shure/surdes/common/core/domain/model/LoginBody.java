@@ -27,6 +27,17 @@ public class LoginBody
      */
     private String uuid = "";
 
+    /**
+     * 第三方token
+     */
+    private String token;
+
+    /**
+     * 登录类型
+     */
+    private String loginType;
+
+
     public String getUsername()
     {
         return username;
@@ -65,5 +76,21 @@ public class LoginBody
     public void setUuid(String uuid)
     {
         this.uuid = uuid;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public String getLoginType() {
+        return loginType;
+    }
+
+    public void setLoginType(String loginType) {
+        this.loginType = loginType;
     }
 }

@@ -1,5 +1,6 @@
 package com.shure.surdes.survey.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -16,4 +17,13 @@ import com.shure.surdes.survey.service.ISysUserPlusService;
 public class SysUserPlusServiceImpl extends ServiceImpl<SysUserPlusMapper, SysUserPlus> 
 	implements ISysUserPlusService {
 
+	@Override
+	public SysUserPlus selectWxUserByOpenId(String openId) {
+		if(openId==null){
+			return null;
+		}
+		LambdaQueryWrapper<SysUserPlus> wrapper=new LambdaQueryWrapper<>();
+		wrapper.eq(SysUserPlus::getOpenId,openId);
+		return baseMapper.selectOne(wrapper);
+	}
 }

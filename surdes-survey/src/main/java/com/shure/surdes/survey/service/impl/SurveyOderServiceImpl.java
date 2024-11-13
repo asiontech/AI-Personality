@@ -226,15 +226,15 @@ public class SurveyOderServiceImpl extends ServiceImpl<SurveyOderMapper, SurveyO
                 jsonObject.put("payDataType", "aliapp");
             }
         } else if ("wx".equals(so.getPayWay())) {
-            jsonObject.put("payDataType", "codeImgUrl");
-//            jsonObject.put("payDataType", "codeUrl");
+//            jsonObject.put("payDataType", "codeImgUrl");
 //            appId = "6720477eca6710ada06d2fab";
             appId = "672ac573e4b0b6471d448a5c";
             if (StringUtils.isNotEmpty(paySource) && "pc".equals(paySource)) {
-                productCode = "WX_H5";
+                jsonObject.put("payDataType", "codeImgUrl");
                 productCode = "WX_NATIVE";
             } else {
-                productCode = "WX_NATIVE";
+                jsonObject.put("payDataType", "wxapp");
+                productCode = "WX_H5";
             }
         }
         jsonObject.put("totalAmount", NumberUtil.round((NumberUtil.mul(discountPrice.toString(), "100")), 0));
