@@ -1,65 +1,138 @@
-# 问卷设计系统
+# 悟心AI性格测试系统
 
 开源不易，点个 star 鼓励一下吧！
 
-## 平台介绍
+## 项目概述
 
-本项目是一个在线设计调查问卷、考试问卷、满意度调查表的问卷设计系统，可动态设计问卷，灵活配置，提供常用的各种题型，可以设置逻辑控制，自动计算等功能。基础框架依赖于**若依管理系统**[点我传送](https://gitee.com/y_project/RuoYi-Vue)
+悟心AI性格测试系统是一个基于若依管理系统的多平台应用，支持微博、微信登录，提供PC端和小程序端访问。用户可以通过回答问卷来判断其16种人格类型所属。该系统已集成到Jeepay项目中，作为一项收费业务，为用户提供个性化的人格分析和情感检测服务。基础框架依赖于**若依管理系统**[点我传送](https://gitee.com/y_project/RuoYi-Vue)
 
-## 内置功能
+## 主要功能
 
-1、后台管理：包括用户、部门、菜单、角色、通知、日志、监控等功能依赖于若依管理系统[点我传送](https://gitee.com/y_project/RuoYi-Vue)，版本3.7.0，感谢若依开源共享。
+1. **多平台登录**：支持微博、微信账号登录，方便用户快速接入系统。
+2. **人格类型测试**：用户通过回答问卷，系统自动分析并判断其16种人格类型。
+3. **情感检测**：基于用户的问卷回答，系统提供情感倾向分析。
+4. **收费服务**：通过Jeepay项目集成，用户需支付费用以获取完整的人格分析和情感检测报告。
+5. **多端支持**：提供PC端和小程序端，用户可根据需求选择使用。
 
-2、问卷管理：包括创建问卷、设计问卷、复制问卷、预览问卷、发布问卷、定时发布、定时结束
+## 技术栈
 
-- 问题的分类、添加、删除、插入、复制、上移、下移等
+- **后端框架**：若依管理系统
+- **前端技术**：Vue.js（PC端）、微信小程序（小程序端）
+- **支付集成**：Jeepay
+- **数据库**：MySQL、Redis
+- **第三方登录**：微博、微信OAuth2.0
 
-- 设置问题的显示逻辑、设置自动计算
 
-3、回收站：包括还原问卷、永久删除
 
-...
+## 安装与部署
 
-## TODO
+### 后端部署
 
-- [x] 问卷的增删改查
+1. **克隆项目**：
 
-- [x] 设计问卷
+   ```
+   git clone https://github.com/asiontech/AI-Personality.git
+   ```
 
-- [ ] 复制问卷
+2. **导入数据库**：
 
-- [x] 预览问卷
+   - 创建MySQL数据库，并导入`backend/resources/sql/`目录下的SQL文件。
 
-- [ ] 手机端预览
+3. **配置数据库连接**：
 
-- [ ] 发布问卷
+   - 修改`backend/config/application.yml`中的数据库连接信息。
 
-- [ ] 定时发布
+4. **启动项目**：
 
-- [x] 问题的新增、插入、删除、上移、下移
+   - 进入`backend`目录，运行以下命令启动后端服务：
 
-- [ ] 问题的逻辑与自动计算
+     bash
 
-- [ ] 问卷数据采集，数据校验，备注填写
+     复制
 
-- [ ] ...
+     ```
+     mvn spring-boot:run
+     ```
 
-## 致谢
+### 前端部署
 
-问卷设计的系统开发基于个人学习和兴趣，由于技术水平与经验的不足，系统尚有很多不足之处，如有BUG或需求请提交[Issues · dddreams/survey-design · GitHub](https://github.com/dddreams/survey-design/issues) 反馈，另外感谢[若依后台管理](https://gitee.com/y_project/RuoYi-Vue)的开源，也欢迎提供指正和建议，感谢各位的支持。
+1. **安装依赖**：
 
-## 效果图
+   - 进入`frontend`目录，运行以下命令安装依赖：
 
-![list.png](https://s2.loli.net/2021/12/21/FgPrhHXNktxmLA4.png)
+     ```
+     npm install
+     ```
 
-![design.png](https://s2.loli.net/2021/12/21/QHk2j43DKUpI5Xa.png)
+2. **启动开发服务器**：
 
-![design1.png](https://s2.loli.net/2021/12/21/gXQ3v7JfDVtmWlT.png)
+   - 运行以下命令启动前端开发服务器：
 
-![QQ截图20220105172550.png](https://s2.loli.net/2022/01/05/edFLivWqmnPM6fc.png)
+     ```
+     npm run serve
+     ```
 
-## 开源地址
+3. **构建生产环境**：
 
-github地址：[https://github.com/dddreams/survey-design](https://github.com/dddreams/survey-design)
+   - 运行以下命令构建生产环境代码：
 
-gitee地址：[https://gitee.com/shure/survey-design](https://gitee.com/shure/survey-design)
+     ```
+     npm run build
+     ```
+
+### 小程序部署
+
+1. **安装依赖**：
+
+   - 进入`miniprogram`目录，运行以下命令安装依赖：
+
+     bash
+
+     复制
+
+     ```
+     npm install
+     ```
+
+2. **导入小程序开发工具**：
+
+   - 使用微信开发者工具导入`miniprogram`目录，并配置AppID。
+
+3. **编译运行**：
+
+   - 在微信开发者工具中点击“编译”并运行小程序。
+
+## 使用说明
+
+1. **登录系统**：
+   - 用户可通过微博或微信账号登录系统。
+2. **填写问卷**：
+   - 登录后，用户可进入问卷页面，回答相关问题。
+3. **查看结果**：
+   - 提交问卷后，系统将自动分析并显示用户的人格类型和情感倾向。
+4. **支付获取报告**：
+   - 用户可通过Jeepay支付获取详细的报告和分析结果。
+
+## 贡献指南
+
+欢迎贡献代码！请遵循以下步骤：
+
+1. Fork项目仓库。
+2. 创建新的分支（`git checkout -b feature/YourFeatureName`）。
+3. 提交更改（`git commit -m 'Add some feature'`）。
+4. 推送到分支（`git push origin feature/YourFeatureName`）。
+5. 创建Pull Request。
+
+## 许可证
+
+本项目采用MIT许可证，详情请参阅[LICENSE](https://license/)文件。
+
+## 联系方式
+
+如有任何问题或建议，请联系项目维护者：
+
+- GitHub: [[悟心AI性格测试](https://github.com/asiontech/AI-Personality)](https://github.com/asiontech/AI-Personality.git)
+
+------
+
+感谢您使用悟心AI性格测试系统！希望我们的服务能为您带来价值。
